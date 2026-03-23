@@ -1,6 +1,7 @@
 package com.proyecto.demo.Models.Entity;
 
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "presupuestos")
@@ -10,10 +11,17 @@ public class Presupuesto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "id_proyecto")
-    private Long idProyecto;
+   
+ 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_proyecto", foreignKey = @ForeignKey(name = "fk_presupuesto_proyecto"))
+    private Proyecto proyecto;
+
 
     private Double total;
+
+    @OneToMany(mappedBy = "presupuesto")
+    private List<DetallePresupuesto> detalles;
 
     // Getters y Setters
     public Long getId() {
@@ -24,12 +32,12 @@ public class Presupuesto {
         this.id = id;
     }
 
-    public Long getIdProyecto() {
-        return idProyecto;
+    public Proyecto getProyecto() {
+        return proyecto;
     }
 
-    public void setIdProyecto(Long idProyecto) {
-        this.idProyecto = idProyecto;
+    public void setProyecto(Proyecto proyecto) {
+        this.proyecto = proyecto;
     }
 
     public Double getTotal() {
@@ -39,4 +47,11 @@ public class Presupuesto {
     public void setTotal(Double total) {
         this.total = total;
     }
+    public List<DetallePresupuesto> getDetalles() {
+        return detalles;
+    }
+    public void setDetalles(List<DetallePresupuesto> detalles) {
+        this.detalles = detalles;
+    }
+
 }

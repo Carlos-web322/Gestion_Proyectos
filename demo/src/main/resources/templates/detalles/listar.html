@@ -12,7 +12,8 @@
     <header>
         <div class="logo">Detalle Presupuesto</div>
         <div>
-            <a class="volver" href="/presupuestos/listar">← Presupuestos</a>
+            <a class="volver" href="/listar">← Proyectos</a>
+            <a class="volver" href="/presupuestos/listar" style="margin-left: 16px;">← Presupuestos</a>
             <a class="crear" href="/detalles/form" style="margin-left: 16px;">+ Nuevo Detalle</a>
         </div>
     </header>
@@ -44,8 +45,8 @@
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>ID Presupuesto</th>
-                    <th>ID Material</th>
+                    <th>Presupuesto</th>
+                    <th>Material</th>
                     <th>Stock</th>
                     <th>Subtotal</th>
                     <th>Acciones</th>
@@ -57,10 +58,10 @@
                     <td colspan="6" class="empty">No hay detalles registrados aún.</td>
                 </tr>
 
-                <tr th:each="d : ${detalle}" th:attr="data-name=${d.idPresupuesto}">
+                <tr th:each="d : ${detalle}" th:attr="data-name=${d.presupuesto.id}">
                     <td><span class="td-id" th:text="'#' + ${d.id}"></span></td>
-                    <td><span class="td-bold" th:text="${d.idPresupuesto}">--</span></td>
-                    <td th:text="${d.idMaterial}">--</td>
+                    <td><span class="td-bold" th:text="'#' + ${d.presupuesto.id}">--</span></td>
+                    <td th:text="${d.material.nombre}">--</td>
                     <td th:text="${d.stock}">--</td>
                     <td><span class="td-accent" th:text="'$ ' + ${d.subtotal}">--</span></td>
                     <td>

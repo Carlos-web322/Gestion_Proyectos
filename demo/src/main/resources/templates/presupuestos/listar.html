@@ -13,8 +13,8 @@
         <div class="logo">Presupuestos</div>
         <div>
             <a class="volver" href="/listar">← Proyectos</a>
-            <a class="volver" href="/materiales/listar" style="margin: 0 16px;">← Materiales</a>
-            <a class="crear" href="/presupuestos/form">+ Nuevo Presupuesto</a>
+            <a class="volver" href="/materiales/listar" style="margin-left: 16px;">← Materiales</a>
+            <a class="crear" href="/presupuestos/form" style="margin-left: 16px;">+ Nuevo Presupuesto</a>
         </div>
     </header>
 
@@ -37,7 +37,7 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7a7a9a" stroke-width="2">
             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
         </svg>
-        <input type="text" id="searchInput" placeholder="Buscar por ID de proyecto..." oninput="filterRows()">
+        <input type="text" id="searchInput" placeholder="Buscar por nombre de proyecto..." oninput="filterRows()">
     </div>
 
     <div class="table-wrap">
@@ -45,7 +45,7 @@
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>ID Proyecto</th>
+                    <th>Proyecto</th>
                     <th>Total</th>
                     <th>Acciones</th>
                 </tr>
@@ -56,12 +56,13 @@
                     <td colspan="4" class="empty">No hay presupuestos registrados aún.</td>
                 </tr>
 
-                <tr th:each="p : ${presupuesto}" th:attr="data-name=${p.idProyecto}">
+                <tr th:each="p : ${presupuesto}" th:attr="data-name=${p.proyecto.nombre}">
                     <td><span class="td-id" th:text="'#' + ${p.id}"></span></td>
-                    <td><span class="td-bold" th:text="${p.idProyecto}">--</span></td>
+                    <td><span class="td-bold" th:text="${p.proyecto.nombre}">--</span></td>
                     <td><span class="td-accent" th:text="'$ ' + ${p.total}">--</span></td>
                     <td>
-                        <a class="editar" th:href="@{/presupuestos/form/{id}(id=${p.id})}">Editar</a>
+                        <!--<a class="editar" th:href="@{/presupuestos/form/{id}(id=${p.id})}">Editar</a> -->
+                        <a class="ver-detalle" href="/detalles/listar">Ver Detalle</a>
                         <a class="eliminar"
                            th:href="@{/presupuestos/eliminar/{id}(id=${p.id})}"
                            onclick="return confirm('¿Seguro que deseas eliminar este presupuesto?');">Eliminar</a>

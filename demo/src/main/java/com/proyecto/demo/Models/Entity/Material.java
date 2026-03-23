@@ -1,6 +1,7 @@
 package com.proyecto.demo.Models.Entity;
 
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "materiales")
@@ -16,6 +17,8 @@ public class Material {
 
     @Column(name = "valor_unitario")
     private Double valorUnitario;
+    @OneToMany(mappedBy = "material")
+    private List<DetallePresupuesto> detalles;
 
     // Getters y Setters
     public Long getId() {
@@ -48,5 +51,12 @@ public class Material {
 
     public void setValorUnitario(Double valorUnitario) {
         this.valorUnitario = valorUnitario;
+    }
+
+    public List<DetallePresupuesto> getDetalles() {
+        return detalles;
+    }
+    public void setDetalles(List<DetallePresupuesto> detalles) {
+        this.detalles = detalles;
     }
 }

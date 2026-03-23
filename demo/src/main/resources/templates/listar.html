@@ -282,6 +282,7 @@
         .card:nth-child(4) { animation-delay: .34s; }
         .card:nth-child(5) { animation-delay: .42s; }
         .card:nth-child(6) { animation-delay: .5s; }
+        
 
         @media (max-width: 600px) {
             .grid { grid-template-columns: 1fr; }
@@ -354,10 +355,17 @@
                     <span class="meta-dot pink"></span>
                     Fecha: <span th:text="${p.fecha}">--</span>
                 </div>
+                 <!-- Total presupuesto -->
+                <div class="meta-row">
+                 <span class="meta-dot" style="background:#43e97b"></span>
+                 Total presupuesto: <span style="color:#43e97b;font-weight:700;" th:text="'$ ' + ${totales[p.id]}">--</span>
+             </div>
             </div>
 
             <div class="card-actions">
                 <a class="act act-edit" th:href="@{/form/{id}(id=${p.id})}">Editar</a>
+                <a class="act" style="color:#1dc896;border-color:rgba(29,200,150,.3);background:rgba(29,200,150,.07);"
+                    th:href="@{/presupuestos/listar}">Ver Presupuesto</a>
                 <a class="act act-del"
                    th:href="@{/eliminar/{id}(id=${p.id})}"
                    onclick="return confirm('¿Seguro que deseas eliminar este proyecto?');">Eliminar</a>

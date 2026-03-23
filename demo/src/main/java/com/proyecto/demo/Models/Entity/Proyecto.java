@@ -12,6 +12,7 @@ public class Proyecto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
 
     private String nombre;
 
@@ -22,6 +23,9 @@ public class Proyecto {
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date fecha;
+
+    @OneToOne(mappedBy = "proyecto")
+    private Presupuesto presupuesto;
 
     // Getters y Setters
     public Long getId() {
@@ -55,4 +59,13 @@ public class Proyecto {
     public void setFecha(Date fecha) {
         this.fecha = fecha;
     }
+
+    public Presupuesto getPresupuesto() {
+        return presupuesto;
+    }
+    
+    public void setPresupuesto(Presupuesto presupuesto) {
+        this.presupuesto = presupuesto;
+    }
+
 }

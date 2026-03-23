@@ -1,5 +1,9 @@
 package com.proyecto.demo.Controllers;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.proyecto.demo.Models.DAO.IProyectoDao;
+import com.proyecto.demo.Models.DAO.IDetallePresupuestoDao;
 import com.proyecto.demo.Models.Entity.Proyecto;
 
 @Controller
@@ -18,12 +23,27 @@ public class ProyectoController {
     @Autowired
     private IProyectoDao proyectoDao;
 
+    @Autowired
+    private IDetallePresupuestoDao detalleDao;
+
     // Método Listar Proyectos
     @GetMapping("/listar")
     public String Listar(Model model) {
+
+        List<Proyecto> proyectos = proyectoDao.findAll();
+    
+         // Mapa de idProyecto -> total
+        Map<Long, Double> totales = new HashMap<>();
+        for (Proyecto p : proyectos) {
+        totales.put(p.getId(), detalleDao.sumSubtotalByProyecto(p.getId()));
+        }
+
         model.addAttribute("titulo", "Listado de Proyectos");
-        model.addAttribute("proyecto", proyectoDao.findAll());
+        model.addAttribute("proyecto", proyectos);
+        model.addAttribute("totales",totales );
+    
         return "listar";
+
     }
 
     // Método Formulario Crear Proyecto
@@ -57,4 +77,6 @@ public class ProyectoController {
         proyectoDao.delete(id);
         return "redirect:/listar";
     }
+
+
 }

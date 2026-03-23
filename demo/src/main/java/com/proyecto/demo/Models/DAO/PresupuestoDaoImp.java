@@ -42,6 +42,9 @@ public class PresupuestoDaoImp implements IPresupuestoDao {
     @Transactional
     @Override
     public void delete(Long id) {
-        em.remove(findOne(id));
+    Presupuesto presupuesto = findOne(id);
+    presupuesto.setProyecto(null);
+    em.merge(presupuesto);
+    em.remove(presupuesto);
     }
 }

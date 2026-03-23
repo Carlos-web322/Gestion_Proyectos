@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 
 import com.proyecto.demo.Models.DAO.IPresupuestoDao;
 import com.proyecto.demo.Models.Entity.Presupuesto;
+import com.proyecto.demo.Models.Entity.Proyecto;
+import com.proyecto.demo.Models.DAO.IProyectoDao;
 
 @Controller
 @RequestMapping("/presupuestos")
@@ -14,6 +16,9 @@ public class PresupuestoController {
 
     @Autowired
     private IPresupuestoDao presupuestoDao;
+
+    @Autowired  // ← agrega esto
+    private IProyectoDao proyectoDao;
 
     @GetMapping("/listar")
     public String listar(Model model) {
@@ -24,13 +29,29 @@ public class PresupuestoController {
 
     @GetMapping("/form")
     public String crear(Model model) {
-        model.addAttribute("titulo", "Nuevo Presupuesto");
+         model.addAttribute("titulo", "Nuevo Presupuesto");
         model.addAttribute("presupuesto", new Presupuesto());
+        model.addAttribute("proyectos", proyectoDao.findAll());
         return "presupuestos/form";
     }
 
     @PostMapping("/form")
-    public String guardar(Presupuesto presupuesto) {
+    public String guardar(Presupuesto presupuesto, Model model) {
+
+        if (presupuesto.getProyecto() != null && presupuesto.getProyecto().getId() != null) {
+            Proyecto proyecto = proyectoDao.findOne(presupuesto.getProyecto().getId());
+            presupuesto.setProyecto(proyecto);
+
+            // Validar que el proyecto no tenga ya un presupuesto (solo al crear)
+            if (presupuesto.getId() == null || presupuesto.getId() == 0) {
+                if (proyecto.getPresupuesto() != null) {
+                    model.addAttribute("error", "Este proyecto ya tiene un presupuesto asignado");
+                    model.addAttribute("presupuesto", presupuesto);
+                    model.addAttribute("proyectos", proyectoDao.findAll());
+                    return "presupuestos/form";
+                }
+            }
+        }
         presupuestoDao.save(presupuesto);
         return "redirect:/presupuestos/listar";
     }
@@ -39,6 +60,7 @@ public class PresupuestoController {
     public String editar(@PathVariable Long id, Model model) {
         model.addAttribute("titulo", "Editar Presupuesto");
         model.addAttribute("presupuesto", presupuestoDao.findOne(id));
+        model.addAttribute("proyectos", proyectoDao.findAll());
         return "presupuestos/form";
     }
 

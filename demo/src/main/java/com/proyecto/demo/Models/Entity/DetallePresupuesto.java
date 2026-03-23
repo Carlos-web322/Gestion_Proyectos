@@ -10,11 +10,14 @@ public class DetallePresupuesto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "id_presupuesto")
-    private Long idPresupuesto;
+   @ManyToOne
+   @JoinColumn(name = "id_presupuesto")
+   private Presupuesto presupuesto;
 
-    @Column(name = "id_material")
-    private Long idMaterial;
+   @ManyToOne
+   @JoinColumn(name = "id_material")
+   private Material material;
+ 
 
     private Integer stock;
 
@@ -29,20 +32,21 @@ public class DetallePresupuesto {
         this.id = id;
     }
 
-    public Long getIdPresupuesto() {
-        return idPresupuesto;
+    public Presupuesto getPresupuesto() {
+        return presupuesto;
     }
 
-    public void setIdPresupuesto(Long idPresupuesto) {
-        this.idPresupuesto = idPresupuesto;
+    public void setPresupuesto(Presupuesto presupuesto) {
+        this.presupuesto = presupuesto;
+
     }
 
-    public Long getIdMaterial() {
-        return idMaterial;
+    public Material getMaterial() {
+        return material ;
     }
 
-    public void setIdMaterial(Long idMaterial) {
-        this.idMaterial = idMaterial;
+    public void setMaterial(Material material) {
+        this.material = material;
     }
 
     public Integer getStock() {

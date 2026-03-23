@@ -5,6 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${titulo}">Formulario Detalle</title>
     <link rel="stylesheet" th:href="@{/CSS/styles.css}">
+    <style>
+        .subtotal-preview {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-family: 'Syne', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        .subtotal-label {
+            font-size: .72rem;
+            font-weight: 500;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: block;
+        }
+    </style>
 </head>
 <body class="mod-detalle">
 <div class="wrap">
@@ -24,26 +45,40 @@
             <input type="hidden" th:field="*{id}">
 
             <div class="field">
-                <label for="idPresupuesto">ID Presupuesto</label>
-                <input type="number" id="idPresupuesto" th:field="*{idPresupuesto}" placeholder="Ej: 1" min="1">
-                <p class="field-hint">ID del presupuesto al que pertenece este detalle</p>
+                <label for="presupuesto">Seleccione Proyecto / Presupuesto</label>
+                <select id="presupuesto" name="presupuesto.id">
+                    <option value="">-- Seleccione un proyecto --</option>
+                    <option th:each="p : ${presupuestos}"
+                            th:value="${p.id}"
+                            th:selected="${detalle.presupuesto != null and detalle.presupuesto.id == p.id}"
+                            th:text="${p.proyecto.nombre} + ' — Presupuesto #' + ${p.id}">
+                    </option>
+                </select>
             </div>
 
             <div class="field">
-                <label for="idMaterial">ID Material</label>
-                <input type="number" id="idMaterial" th:field="*{idMaterial}" placeholder="Ej: 1" min="1">
-                <p class="field-hint">ID del material utilizado en este detalle</p>
+                <label for="material">Material</label>
+                <select id="material" name="material.id" onchange="calcularSubtotal()">
+                    <option value="" data-valor="0">-- Seleccione un material --</option>
+                    <option th:each="m : ${materiales}"
+                            th:value="${m.id}"
+                            th:attr="data-valor=${m.valorUnitario}"
+                            th:selected="${detalle.material != null and detalle.material.id == m.id}"
+                            th:text="${m.nombre} + ' — $ ' + ${m.valorUnitario}">
+                    </option>
+                </select>
             </div>
 
             <div class="field">
-                <label for="stock">Stock</label>
-                <input type="number" id="stock" th:field="*{stock}" placeholder="Ej: 20" min="0">
+                <label for="stock">Cantidad</label>
+                <input type="number" id="stock" th:field="*{stock}"
+                       placeholder="Ej: 20" min="0" oninput="calcularSubtotal()">
             </div>
 
             <div class="field">
-                <label for="subtotal">Subtotal</label>
-                <input type="number" id="subtotal" th:field="*{subtotal}" placeholder="Ej: 2000" step="0.01" min="0">
-                <p class="field-hint">Valor en pesos sin puntos ni comas</p>
+                <span class="subtotal-label">Subtotal calculado</span>
+                <div class="subtotal-preview" id="subtotalPreview">$ 0.00</div>
+                <input type="hidden" id="subtotal" th:field="*{subtotal}">
             </div>
 
             <div class="divider"></div>
@@ -57,5 +92,30 @@
     </div>
 
 </div>
+<script>
+    function calcularSubtotal() {
+        const materialSelect = document.getElementById('material');
+        const stockInput = document.getElementById('stock');
+        const subtotalHidden = document.getElementById('subtotal');
+        const subtotalPreview = document.getElementById('subtotalPreview');
+
+        const valorUnitario = parseFloat(
+            materialSelect.options[materialSelect.selectedIndex]?.getAttribute('data-valor') || 0
+        );
+        const cantidad = parseInt(stockInput.value) || 0;
+        const subtotal = valorUnitario * cantidad;
+
+        subtotalHidden.value = subtotal.toFixed(2);
+        subtotalPreview.textContent = '$ ' + subtotal.toLocaleString('es-CO', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+
+    // Calcular al cargar si hay valores (modo editar)
+    window.onload = function() {
+        calcularSubtotal();
+    };
+</script>
 </body>
 </html>
