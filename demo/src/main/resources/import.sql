@@ -12,3 +12,8 @@ Insert into presupuestos(id_proyecto, total) values(1, 4500);
 Insert into presupuestos(id_proyecto, total) values(2, 12000);
 Insert into presupuestos(id_proyecto, total) values(3, 7800);
 Insert into presupuestos(id_proyecto, total) values(1, 3200);
+
+Insert into detalle_presupuesto(id_presupuesto, id_material, stock, subtotal) values(1, 1, 20, 2000);
+Insert into detalle_presupuesto(id_presupuesto, id_material, stock, subtotal) values(1, 2, 5, 1000);
+Insert into detalle_presupuesto(id_presupuesto, id_material, stock, subtotal) values(1, 3, 15, 1500);
+Insert into detalle_presupuesto(id_presupuesto, id_material, stock, subtotal) values(2, 4, 10, 3200);
