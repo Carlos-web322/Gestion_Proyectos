@@ -7,3 +7,8 @@ Insert into materiales(nombre, descripcion, valor_unitario) values('Cemento', 'B
 Insert into materiales(nombre, descripcion, valor_unitario) values('Arena', 'Metro cubico de arena fina', 80000);
 Insert into materiales(nombre, descripcion, valor_unitario) values('Varilla', 'Varilla de acero 1/2 pulgada', 15000);
 Insert into materiales(nombre, descripcion, valor_unitario) values('Ladrillo', 'Ladrillo tolete unidad', 1200);
+
+Insert into presupuestos(id_proyecto, total) values(1, 4500);
+Insert into presupuestos(id_proyecto, total) values(2, 12000);
+Insert into presupuestos(id_proyecto, total) values(3, 7800);
+Insert into presupuestos(id_proyecto, total) values(1, 3200);

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presupuestos</title>
+    <link rel="stylesheet" th:href="@{/CSS/styles.css}">
+</head>
+<body class="mod-presupuesto">
+<div class="wrap">
+
+    <header>
+        <div class="logo">Presupuestos</div>
+        <div>
+            <a class="volver" href="/listar">← Proyectos</a>
+            <a class="volver" href="/materiales/listar" style="margin: 0 16px;">← Materiales</a>
+            <a class="crear" href="/presupuestos/form">+ Nuevo Presupuesto</a>
+        </div>
+    </header>
+
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-label">Total</div>
+            <div class="stat-val" th:text="${#lists.size(presupuesto)}">0</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Estado</div>
+            <div class="stat-val sm stat-accent">Activo</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Módulo</div>
+            <div class="stat-val sm">Finanzas</div>
+        </div>
+    </div>
+
+    <div class="search-bar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7a7a9a" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Buscar por ID de proyecto..." oninput="filterRows()">
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>ID Proyecto</th>
+                    <th>Total</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tbody">
+
+                <tr th:if="${#lists.isEmpty(presupuesto)}">
+                    <td colspan="4" class="empty">No hay presupuestos registrados aún.</td>
+                </tr>
+
+                <tr th:each="p : ${presupuesto}" th:attr="data-name=${p.idProyecto}">
+                    <td><span class="td-id" th:text="'#' + ${p.id}"></span></td>
+                    <td><span class="td-bold" th:text="${p.idProyecto}">--</span></td>
+                    <td><span class="td-accent" th:text="'$ ' + ${p.total}">--</span></td>
+                    <td>
+                        <a class="editar" th:href="@{/presupuestos/form/{id}(id=${p.id})}">Editar</a>
+                        <a class="eliminar"
+                           th:href="@{/presupuestos/eliminar/{id}(id=${p.id})}"
+                           onclick="return confirm('¿Seguro que deseas eliminar este presupuesto?');">Eliminar</a>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+</div>
+<script>
+    function filterRows() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        document.querySelectorAll('#tbody tr[data-name]').forEach(r => {
+            r.style.display = String(r.dataset.name).includes(q) ? '' : 'none';
+        });
+    }
+</script>
+</body>
+</html>
