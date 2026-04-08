@@ -61,7 +61,7 @@
                     <td><span class="td-id" th:text="'#' + ${m.id}"></span></td>
                     <td><span class="td-bold" th:text="${m.nombre}">--</span></td>
                     <td th:text="${m.descripcion}">--</td>
-                    <td><span class="td-accent" th:text="'$ ' + ${m.valorUnitario}">--</span></td>
+                    <td><span class="td-accent" th:text="'$ ' + ${#numbers.formatDecimal(m.valorUnitario, 1, 'COMMA', 0, 'POINT')}">--</span></td>
                     <td>
                         <a class="editar" th:href="@{/materiales/form/{id}(id=${m.id})}">Editar</a>
                         <a class="eliminar"

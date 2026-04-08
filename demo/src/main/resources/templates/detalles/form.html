@@ -64,7 +64,7 @@
                             th:value="${m.id}"
                             th:attr="data-valor=${m.valorUnitario}"
                             th:selected="${detalle.material != null and detalle.material.id == m.id}"
-                            th:text="${m.nombre} + ' — $ ' + ${m.valorUnitario}">
+                            th:text="${m.nombre} + ' — $ ' + ${#numbers.formatDecimal(m.valorUnitario, 1, 'COMMA', 0, 'POINT')}">
                     </option>
                 </select>
             </div>
@@ -107,8 +107,8 @@
 
         subtotalHidden.value = subtotal.toFixed(2);
         subtotalPreview.textContent = '$ ' + subtotal.toLocaleString('es-CO', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
         });
     }
 

@@ -358,7 +358,11 @@
                  <!-- Total presupuesto -->
                 <div class="meta-row">
                  <span class="meta-dot" style="background:#43e97b"></span>
-                 Total presupuesto: <span style="color:#43e97b;font-weight:700;" th:text="'$ ' + ${totales[p.id]}">--</span>
+                 Total presupuesto: 
+                 <span 
+                 style="color:#43e97b;font-weight:700;" th:text="'$ ' 
+                 + ${#numbers.formatDecimal(totales[p.id], 1, 'COMMA', 0, 'POINT')}"
+                 >--</span>
              </div>
             </div>
 

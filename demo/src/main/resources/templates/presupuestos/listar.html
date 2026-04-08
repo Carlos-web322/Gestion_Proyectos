@@ -59,7 +59,7 @@
                 <tr th:each="p : ${presupuesto}" th:attr="data-name=${p.proyecto.nombre}">
                     <td><span class="td-id" th:text="'#' + ${p.id}"></span></td>
                     <td><span class="td-bold" th:text="${p.proyecto.nombre}">--</span></td>
-                    <td><span class="td-accent" th:text="'$ ' + ${p.total}">--</span></td>
+                    <td><span class="td-accent" th:text="'$ ' + ${#numbers.formatDecimal(p.total, 1, 'COMMA', 0, 'POINT')}">--</span></td>
                     <td>
                         <!--<a class="editar" th:href="@{/presupuestos/form/{id}(id=${p.id})}">Editar</a> -->
                         <a class="ver-detalle" href="/detalles/listar">Ver Detalle</a>
