@@ -9,4 +9,5 @@ public interface IMaterialDao {
     public void save(Material material);
     public Material findOne(Long id);
     public void delete(Long id);
+    public Integer stockUsado(Long idMaterial);
 }

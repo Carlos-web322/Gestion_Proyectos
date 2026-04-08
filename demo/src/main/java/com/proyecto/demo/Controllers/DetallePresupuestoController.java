@@ -72,15 +72,25 @@ public class DetallePresupuestoController {
             return "detalles/form";
         }
 
-        if (detalle.getPresupuesto() != null && detalle.getPresupuesto().getId() != null) {
-            detalle.setPresupuesto(presupuestoDao.findOne(detalle.getPresupuesto().getId()));
+        detalle.setPresupuesto(presupuestoDao.findOne(detalle.getPresupuesto().getId()));
+
+        Material material = materialDao.findOne(detalle.getMaterial().getId());
+
+        // Validar stock disponible
+        Integer stockUsado = materialDao.stockUsado(material.getId());
+        Integer stockDisponible = material.getStockTotal() - stockUsado;
+
+        if (detalle.getStock() > stockDisponible) {
+            model.addAttribute("error", "Stock insuficiente. Solo hay " +
+                    stockDisponible + " unidades disponibles de " + material.getNombre());
+            model.addAttribute("detalle", detalle);
+            model.addAttribute("presupuestos", presupuestoDao.findAll());
+            model.addAttribute("materiales", materialDao.findAll());
+            return "detalles/form";
         }
 
-        if (detalle.getMaterial() != null && detalle.getMaterial().getId() != null) {
-            Material material = materialDao.findOne(detalle.getMaterial().getId());
-            detalle.setMaterial(material);
-            detalle.setSubtotal(material.getValorUnitario() * detalle.getStock());
-        }
+        detalle.setMaterial(material);
+        detalle.setSubtotal(material.getValorUnitario() * detalle.getStock());
 
         detalleDao.save(detalle);
 

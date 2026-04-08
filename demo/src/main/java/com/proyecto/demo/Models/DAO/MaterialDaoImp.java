@@ -44,4 +44,15 @@ public class MaterialDaoImp implements IMaterialDao {
     public void delete(Long id) {
         em.remove(findOne(id));
     }
+    
+    @Transactional(readOnly = true)
+    @Override
+    public Integer stockUsado(Long idMaterial) {
+        String query = "select coalesce(sum(d.stock), 0) from DetallePresupuesto d " +
+                "where d.material.id = :idMaterial";
+        Number resultado = (Number) em.createQuery(query)
+                .setParameter("idMaterial", idMaterial)
+                .getSingleResult();
+        return resultado.intValue();
+    }
 }

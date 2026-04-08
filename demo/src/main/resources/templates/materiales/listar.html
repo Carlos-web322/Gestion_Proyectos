@@ -49,13 +49,15 @@
                     <th>Nombre</th>
                     <th>Descripción</th>
                     <th>Valor Unitario</th>
+                    <th>Stock Total</th>
+                    <th>Stock Disponible</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody id="tbody">
 
                 <tr th:if="${#lists.isEmpty(material)}">
-                    <td colspan="5" class="empty">No hay materiales registrados aún.</td>
+                    <td colspan="6" class="empty">No hay materiales registrados aún.</td>
                 </tr>
 
                 <tr th:each="m : ${material}" th:attr="data-name=${#strings.toLowerCase(m.nombre)}">
@@ -63,6 +65,8 @@
                     <td><span class="td-bold" th:text="${m.nombre}">--</span></td>
                     <td th:text="${m.descripcion}">--</td>
                     <td><span class="td-accent" th:text="'$ ' + ${#numbers.formatDecimal(m.valorUnitario, 1, 'COMMA', 0, 'POINT')}">--</span></td>
+                    <td th:text="${m.stockTotal}">--</td>
+                    <td th:text="${stockDisponible[m.id]}">--</td>
                     <td>
                         <a class="editar" th:href="@{/materiales/form/{id}(id=${m.id})}">Editar</a>
                         <a class="eliminar"

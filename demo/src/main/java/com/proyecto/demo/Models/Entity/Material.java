@@ -30,6 +30,11 @@ public class Material {
     @Column(name = "valor_unitario")
     private Double valorUnitario;
 
+    @NotNull(message = "El stock Total es obligatoria")
+    @Min(value = 0, message = "El stock total no puede ser negativa")
+    @Column(name = "cantidad_disponible")
+    private Integer stockTotal;
+
     @OneToMany(mappedBy = "material")
     private List<DetallePresupuesto> detalles;
 
@@ -71,5 +76,13 @@ public class Material {
     }
     public void setDetalles(List<DetallePresupuesto> detalles) {
         this.detalles = detalles;
+    }
+
+    public Integer getStockTotal() {
+        return stockTotal;
+    }
+
+    public void setStockTotal(Integer stockTotal) {
+        this.stockTotal = stockTotal;
     }
 }
