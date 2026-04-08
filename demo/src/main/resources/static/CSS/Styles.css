@@ -595,3 +595,68 @@ select option {
     background: var(--surface);
     color: var(--text);
 }
+
+/* ── Navbar ── */
+.navbar-wrap {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(15, 15, 19, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    height: 56px;
+}
+
+.navbar-logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 800;
+    background: linear-gradient(120deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.navbar-links {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.navbar-links a {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-family: 'Syne', sans-serif;
+    font-size: .8rem;
+    font-weight: 600;
+    letter-spacing: .4px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: none;
+    background: none;
+    transition: all .2s;
+}
+
+.navbar-links a:hover {
+    color: var(--text);
+    background: var(--surface);
+}
+
+.navbar-links a.active {
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+/* Ajuste del body para que no tape el contenido */
+body {
+    padding-top: 80px !important;
+}
