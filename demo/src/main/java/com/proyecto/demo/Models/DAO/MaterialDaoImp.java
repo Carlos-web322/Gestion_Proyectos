@@ -23,7 +23,7 @@ public class MaterialDaoImp implements IMaterialDao {
         return em.createQuery("from Material").getResultList();
     }
 
-    @Transactional
+    @Transactional  
     @Override
     public void save(Material material) {
         if (material.getId() != null && material.getId() > 0) {

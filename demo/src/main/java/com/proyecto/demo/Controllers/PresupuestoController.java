@@ -17,7 +17,7 @@ public class PresupuestoController {
     @Autowired
     private IPresupuestoDao presupuestoDao;
 
-    @Autowired  // ← agrega esto
+    @Autowired  
     private IProyectoDao proyectoDao;
 
     @GetMapping("/listar")
@@ -38,6 +38,13 @@ public class PresupuestoController {
     @PostMapping("/form")
     public String guardar(Presupuesto presupuesto, Model model) {
 
+        // Validar que haya seleccionado un proyecto
+        if (presupuesto.getProyecto() == null || presupuesto.getProyecto().getId() == null) {
+            model.addAttribute("error", "Debe seleccionar un proyecto para crear el presupuesto");
+            model.addAttribute("presupuesto", presupuesto);
+            model.addAttribute("proyectos", proyectoDao.findAll());
+            return "presupuestos/form";
+        }
         if (presupuesto.getProyecto() != null && presupuesto.getProyecto().getId() != null) {
             Proyecto proyecto = proyectoDao.findOne(presupuesto.getProyecto().getId());
             presupuesto.setProyecto(proyecto);
