@@ -43,20 +43,48 @@ public class DetallePresupuestoController {
     }
 
     @PostMapping("/form")
-    public String guardar(DetallePresupuesto detalle) {
-        
-         if (detalle.getPresupuesto() != null && detalle.getPresupuesto().getId() != null) {
-        detalle.setPresupuesto(presupuestoDao.findOne(detalle.getPresupuesto().getId()));
+    public String guardar(DetallePresupuesto detalle, Model model) {
+
+        // Validar presupuesto
+        if (detalle.getPresupuesto() == null || detalle.getPresupuesto().getId() == null) {
+            model.addAttribute("error", "Debe seleccionar un proyecto/presupuesto");
+            model.addAttribute("detalle", detalle);
+            model.addAttribute("presupuestos", presupuestoDao.findAll());
+            model.addAttribute("materiales", materialDao.findAll());
+            return "detalles/form";
+        }
+
+        // Validar material
+        if (detalle.getMaterial() == null || detalle.getMaterial().getId() == null) {
+            model.addAttribute("error", "Debe seleccionar un material");
+            model.addAttribute("detalle", detalle);
+            model.addAttribute("presupuestos", presupuestoDao.findAll());
+            model.addAttribute("materiales", materialDao.findAll());
+            return "detalles/form";
+        }
+
+        // Validar stock
+        if (detalle.getStock() == null || detalle.getStock() < 1) {
+            model.addAttribute("error", "La cantidad debe ser mayor a 0");
+            model.addAttribute("detalle", detalle);
+            model.addAttribute("presupuestos", presupuestoDao.findAll());
+            model.addAttribute("materiales", materialDao.findAll());
+            return "detalles/form";
+        }
+
+        if (detalle.getPresupuesto() != null && detalle.getPresupuesto().getId() != null) {
+            detalle.setPresupuesto(presupuestoDao.findOne(detalle.getPresupuesto().getId()));
         }
 
         if (detalle.getMaterial() != null && detalle.getMaterial().getId() != null) {
-        Material material = materialDao.findOne(detalle.getMaterial().getId());
-        detalle.setMaterial(material);
-        detalle.setSubtotal(material.getValorUnitario() * detalle.getStock());
+            Material material = materialDao.findOne(detalle.getMaterial().getId());
+            detalle.setMaterial(material);
+            detalle.setSubtotal(material.getValorUnitario() * detalle.getStock());
         }
 
         detalleDao.save(detalle);
-    // Recalcular y actualizar el total del presupuesto
+
+        // Recalcular y actualizar el total del presupuesto
         Presupuesto presupuesto = detalle.getPresupuesto();
         Double nuevoTotal = detalleDao.sumSubtotalByPresupuesto(presupuesto.getId());
         presupuesto.setTotal(nuevoTotal);
