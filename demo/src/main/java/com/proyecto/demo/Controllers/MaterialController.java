@@ -3,10 +3,13 @@ package com.proyecto.demo.Controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import com.proyecto.demo.Models.DAO.IMaterialDao;
 import com.proyecto.demo.Models.Entity.Material;
+
+import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/materiales")
@@ -30,7 +33,11 @@ public class MaterialController {
     }
 
     @PostMapping("/form")
-    public String guardar(Material material) {
+    public String guardar(@Valid Material material, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("titulo", material.getId() != null ? "Editar Material" : "Nuevo Material");
+            return "materiales/form";
+        }   
         materialDao.save(material);
         return "redirect:/materiales/listar";
     }

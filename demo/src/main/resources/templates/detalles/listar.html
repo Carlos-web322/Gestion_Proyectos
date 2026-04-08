@@ -38,7 +38,7 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7a7a9a" stroke-width="2">
             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
         </svg>
-        <input type="text" id="searchInput" placeholder="Buscar por nombre de proyecto..." oninput="filterRows()">
+        <input type="text" id="searchInput" placeholder="Buscar por Material..." oninput="filterRows()">
     </div>
 
     <div class="table-wrap">
@@ -59,7 +59,7 @@
                     <td colspan="6" class="empty">No hay detalles registrados aún.</td>
                 </tr>
 
-                <tr th:each="d : ${detalle}" th:attr="data-name=${d.presupuesto.proyecto.nombre}">
+                <tr th:each="d : ${detalle}" th:attr="data-name=${#strings.toLowerCase(d.material.nombre)}">
                     <td><span class="td-id" th:text="'#' + ${d.id}"></span></td>
                     <td><span class="td-bold" th:text="${d.presupuesto.proyecto.nombre}">--</span></td>
                     <td th:text="${d.material.nombre}">--</td>

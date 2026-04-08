@@ -79,4 +79,11 @@ public class DetallePresupuestoController {
         detalleDao.delete(id);
         return "redirect:/detalles/listar";
     }
+
+    @GetMapping("/presupuesto/{idPresupuesto}")
+    public String listarPorPresupuesto(@PathVariable Long idPresupuesto, Model model) {
+        model.addAttribute("titulo", "Detalles del Presupuesto");
+        model.addAttribute("detalle", detalleDao.findByPresupuesto(idPresupuesto));
+        return "detalles/listar";
+    }
 }

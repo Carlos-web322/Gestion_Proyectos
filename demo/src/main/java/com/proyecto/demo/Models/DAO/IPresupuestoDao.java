@@ -9,4 +9,5 @@ public interface IPresupuestoDao {
     public void save(Presupuesto presupuesto);
     public Presupuesto findOne(Long id);
     public void delete(Long id);
+    public List<Presupuesto> findByProyecto(Long idProyecto);
 }

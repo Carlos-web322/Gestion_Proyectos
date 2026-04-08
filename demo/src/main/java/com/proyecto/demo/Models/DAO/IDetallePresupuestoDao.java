@@ -12,4 +12,5 @@ public interface IDetallePresupuestoDao {
     public void delete(Long id);
     public Double sumSubtotalByProyecto(Long idProyecto);
     public Double sumSubtotalByPresupuesto(Long idPresupuesto);
+    public List<DetallePresupuesto> findByPresupuesto(Long idPresupuesto);
 }

@@ -2,6 +2,10 @@ package com.proyecto.demo.Models.Entity;
 
 import jakarta.persistence.*;
 import java.util.Date;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -13,11 +17,16 @@ public class Proyecto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "El nombre es obligatorio")
+    @Size(min = 3, max = 50, message = "El nombre debe tener entre 3 y 50 caracteres")
+    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s0-9]+$", message = "El nombre solo puede contener letras, números y espacios")
     private String nombre;
-
+ 
+    @NotNull(message = "El ID del cliente es obligatorio")
     @Column(name = "id_cliente")
     private Long idCliente;
-
+    
+    @NotNull(message = "La fecha es obligatoria")
     @Column(name = "fecha")
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "yyyy-MM-dd")

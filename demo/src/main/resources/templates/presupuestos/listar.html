@@ -56,13 +56,13 @@
                     <td colspan="4" class="empty">No hay presupuestos registrados aún.</td>
                 </tr>
 
-                <tr th:each="p : ${presupuesto}" th:attr="data-name=${p.proyecto.nombre}">
+                <tr th:each="p : ${presupuesto}" th:attr="data-name=${#strings.toLowerCase(p.proyecto.nombre)}">
                     <td><span class="td-id" th:text="'#' + ${p.id}"></span></td>
                     <td><span class="td-bold" th:text="${p.proyecto.nombre}">--</span></td>
                     <td><span class="td-accent" th:text="'$ ' + ${#numbers.formatDecimal(p.total, 1, 'COMMA', 0, 'POINT')}">--</span></td>
                     <td>
                         <!--<a class="editar" th:href="@{/presupuestos/form/{id}(id=${p.id})}">Editar</a> -->
-                        <a class="ver-detalle" href="/detalles/listar">Ver Detalle</a>
+                        <a class="ver-detalle" th:href="@{/detalles/presupuesto/{id}(id=${p.id})}">Ver Detalle</a>
                         <a class="eliminar"
                            th:href="@{/presupuestos/eliminar/{id}(id=${p.id})}"
                            onclick="return confirm('¿Seguro que deseas eliminar este presupuesto?');">Eliminar</a>
