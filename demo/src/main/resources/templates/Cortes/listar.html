@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cortes</title>
+    <link rel="stylesheet" th:href="@{/CSS/styles.css}">
+</head>
+<body class="mod-corte">
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div class="wrap">
+
+    <header>
+        <div class="logo">Cortes</div>
+        <a class="crear" href="/cortes/form">+ Nuevo Corte</a>
+    </header>
+
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-label">Total</div>
+            <div class="stat-val" th:text="${#lists.size(corte)}">0</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Estado</div>
+            <div class="stat-val sm stat-accent">Activo</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Módulo</div>
+            <div class="stat-val sm">Control</div>
+        </div>
+    </div>
+
+    <div class="search-bar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7a7a9a" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Buscar corte por descripción..." oninput="filterRows()">
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Descripción</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tbody">
+
+                <tr th:if="${#lists.isEmpty(corte)}">
+                    <td colspan="4" class="empty">No hay cortes registrados aún.</td>
+                </tr>
+
+                <tr th:each="c : ${corte}" th:attr="data-name=${#strings.toLowerCase(c.descripcion)}">
+                    <td><span class="td-id" th:text="'#' + ${c.id}"></span></td>
+                    <td><span class="td-bold" th:text="${c.descripcion}">--</span></td>
+                    <td th:text="${c.fecha}">--</td>
+                    <td>
+                        <a class="Detalle" th:href="@{/detalleCorte/corte/{id}(id=${c.id})}">Detalle</a>
+                        <a class="editar" th:href="@{/cortes/form/{id}(id=${c.id})}">Editar</a>
+                        <a class="eliminar"
+                           th:href="@{/cortes/eliminar/{id}(id=${c.id})}"
+                           onclick="return confirm('¿Seguro que deseas eliminar este corte?');">Eliminar</a>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+</div>
+<script>
+    function filterRows() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        document.querySelectorAll('#tbody tr[data-name]').forEach(r => {
+            r.style.display = r.dataset.name.includes(q) ? '' : 'none';
+        });
+    }
+</script>
+</body>
+</html>

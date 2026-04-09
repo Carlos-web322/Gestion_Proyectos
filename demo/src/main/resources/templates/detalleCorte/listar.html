@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle Corte</title>
+    <link rel="stylesheet" th:href="@{/CSS/styles.css}">
+</head>
+<body class="mod-corte">
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div class="wrap">
+
+    <header>
+        <div class="logo">Detalle Corte</div>
+        <div>
+            <a class="volver" href="/cortes/listar">← Cortes</a>
+            <a class="crear" href="/detalleCorte/form" style="margin-left: 16px;">+ Nuevo Detalle</a>
+        </div>
+    </header>
+
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-label">Total</div>
+            <div class="stat-val" th:text="${#lists.size(detalleCorte)}">0</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Estado</div>
+            <div class="stat-val sm stat-accent">Activo</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Módulo</div>
+            <div class="stat-val sm">Cortes</div>
+        </div>
+    </div>
+
+    <div class="search-bar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7a7a9a" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Buscar por material..." oninput="filterRows()">
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Corte</th>
+                    <th>Material</th>
+                    <th>Cantidad</th>
+                    <th>Subtotal</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tbody">
+
+                <tr th:if="${#lists.isEmpty(detalleCorte)}">
+                    <td colspan="6" class="empty">No hay detalles de corte registrados aún.</td>
+                </tr>
+
+                <tr th:each="dc : ${detalleCorte}"
+                    th:attr="data-name=${#strings.toLowerCase(dc.detallePresupuesto.material.nombre)}">
+                    <td><span class="td-id" th:text="'#' + ${dc.id}"></span></td>
+                    <td><span class="td-bold" th:text="${dc.corte.descripcion}">--</span></td>
+                    <td th:text="${dc.detallePresupuesto.material.nombre}">--</td>
+                    <td th:text="${dc.cantidad}">--</td>
+                    <td><span class="td-accent"
+                              th:text="'$ ' + ${#numbers.formatDecimal(dc.subtotal, 1, 'COMMA', 0, 'POINT')}">--</span></td>
+                    <td>
+                        <a class="editar" th:href="@{/detalleCorte/form/{id}(id=${dc.id})}">Editar</a>
+                        <a class="eliminar"
+                           th:href="@{/detalleCorte/eliminar/{id}(id=${dc.id})}"
+                           onclick="return confirm('¿Seguro que deseas eliminar este detalle?');">Eliminar</a>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+</div>
+<script>
+    function filterRows() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        document.querySelectorAll('#tbody tr[data-name]').forEach(r => {
+            r.style.display = r.dataset.name.includes(q) ? '' : 'none';
+        });
+    }
+</script>
+</body>
+</html>

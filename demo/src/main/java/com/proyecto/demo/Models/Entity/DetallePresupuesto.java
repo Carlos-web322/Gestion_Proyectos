@@ -1,6 +1,7 @@
 package com.proyecto.demo.Models.Entity;
 
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "detalle_presupuesto")
@@ -17,7 +18,9 @@ public class DetallePresupuesto {
    @ManyToOne
    @JoinColumn(name = "id_material")
    private Material material;
- 
+   
+    @OneToMany(mappedBy = "detallePresupuesto")
+   private List<DetalleCorte> detallesCorte;
 
     private Integer stock;
 
@@ -64,4 +67,13 @@ public class DetallePresupuesto {
     public void setSubtotal(Double subtotal) {
         this.subtotal = subtotal;
     }
+
+    public List<DetalleCorte> getDetallesCorte() {
+        return detallesCorte;
+    }
+
+    public void setDetallesCorte(List<DetalleCorte> detallesCorte) {
+        this.detallesCorte = detallesCorte;
+    }
+
 }

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">Formulario Detalle Corte</title>
+    <link rel="stylesheet" th:href="@{/CSS/styles.css}">
+    <style>
+        .subtotal-preview {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-family: 'Syne', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        .subtotal-label {
+            font-size: .72rem;
+            font-weight: 500;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: block;
+        }
+    </style>
+</head>
+<body class="mod-corte">
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div class="wrap">
+
+    <a class="volver" href="/detalleCorte/listar">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+        Volver a Detalle Corte
+    </a>
+
+    <h1 th:text="${titulo}">Formulario de Detalle Corte</h1>
+
+    <!-- Mensaje de error -->
+    <div th:if="${error}" style="background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.3);
+         color:#ff4d6d;padding:12px 16px;border-radius:8px;margin-bottom:20px;font-size:.88rem;">
+        <span th:text="${error}"></span>
+    </div>
+
+    <div class="form-card">
+        <form th:action="@{/detalleCorte/form}" th:object="${detalleCorte}" method="post">
+
+            <input type="hidden" th:field="*{id}">
+
+            <div class="field">
+                <label for="corte">Corte</label>
+                <select id="corte" name="corte.id">
+                    <option value="">-- Seleccione un corte --</option>
+                    <option th:each="c : ${cortes}"
+                            th:value="${c.id}"
+                            th:selected="${detalleCorte.corte != null and detalleCorte.corte.id == c.id}"
+                            th:text="${c.descripcion} + ' — ' + ${c.fecha}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="detallePresupuesto">Material del Presupuesto</label>
+                <select id="detallePresupuesto" name="detallePresupuesto.id" onchange="calcularSubtotal()">
+                    <option value="" data-valor="0">-- Seleccione un material --</option>
+                    <option th:each="dp : ${detallesPresupuesto}"
+                            th:value="${dp.id}"
+                            th:attr="data-valor=${dp.material.valorUnitario}"
+                            th:selected="${detalleCorte.detallePresupuesto != null and detalleCorte.detallePresupuesto.id == dp.id}"
+                            th:text="${dp.presupuesto.proyecto.nombre} + ' — ' + ${dp.material.nombre} + ' — $ ' + ${#numbers.formatDecimal(dp.material.valorUnitario, 1, 'COMMA', 0, 'POINT')}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="cantidad">Cantidad</label>
+                <input type="number" id="cantidad" th:field="*{cantidad}"
+                       placeholder="Ej: 10" min="1" oninput="calcularSubtotal()">
+            </div>
+
+            <div class="field">
+                <span class="subtotal-label">Subtotal calculado</span>
+                <div class="subtotal-preview" id="subtotalPreview">$ 0</div>
+                <input type="hidden" id="subtotal" th:field="*{subtotal}">
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="actions">
+                <button type="submit">Guardar Detalle Corte</button>
+                <a class="btn-cancel" href="/detalleCorte/listar">Cancelar</a>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+<script>
+    function calcularSubtotal() {
+        const dpSelect = document.getElementById('detallePresupuesto');
+        const cantidadInput = document.getElementById('cantidad');
+        const subtotalHidden = document.getElementById('subtotal');
+        const subtotalPreview = document.getElementById('subtotalPreview');
+
+        const valorUnitario = parseFloat(
+            dpSelect.options[dpSelect.selectedIndex]?.getAttribute('data-valor') || 0
+        );
+        const cantidad = parseInt(cantidadInput.value) || 0;
+        const subtotal = valorUnitario * cantidad;
+
+        subtotalHidden.value = subtotal.toFixed(2);
+        subtotalPreview.textContent = '$ ' + subtotal.toLocaleString('es-CO', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        });
+    }
+
+    window.onload = function() {
+        calcularSubtotal();
+    };
+</script>
+</body>
+</html>

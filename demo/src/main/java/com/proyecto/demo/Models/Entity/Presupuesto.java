@@ -23,6 +23,17 @@ public class Presupuesto {
     @OneToMany(mappedBy = "presupuesto")
     private List<DetallePresupuesto> detalles;
 
+    @OneToMany(mappedBy = "presupuesto")
+    private List<Corte> cortes;
+
+    public List<Corte> getCortes() {
+        return cortes;
+    }
+
+    public void setCortes(List<Corte> cortes) {
+        this.cortes = cortes;
+    }
+
     // Getters y Setters
     public Long getId() {
         return id;
