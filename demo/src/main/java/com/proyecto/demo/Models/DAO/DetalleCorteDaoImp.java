@@ -63,4 +63,15 @@ public class DetalleCorteDaoImp implements IDetalleCorteDao {
                  .setParameter("idCorte", idCorte)
                  .getResultList();
     }
+
+    @Transactional(readOnly = true)
+@Override
+public Double sumSubtotalByPresupuesto(Long idPresupuesto) {
+    String query = "select coalesce(sum(dc.subtotal), 0) from DetalleCorte dc " +
+                   "where dc.corte.presupuesto.id = :idPresupuesto";
+    Number resultado = (Number) em.createQuery(query)
+                                  .setParameter("idPresupuesto", idPresupuesto)
+                                  .getSingleResult();
+    return resultado.doubleValue();
+}
 }

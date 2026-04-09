@@ -10,4 +10,5 @@ public interface IDetalleCorteDao {
     public void delete(Long id);
     public Double sumSubtotalByCorte(Long idCorte);
     public List<DetalleCorte> findByCorte(Long idCorte);
+    public Double sumSubtotalByPresupuesto(Long idPresupuesto);
 }

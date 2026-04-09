@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cortes</title>
     <link rel="stylesheet" th:href="@{/CSS/styles.css}">
+    <style>
+        .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table { table-layout: auto; width: 100%; }
+        .act-group { display: flex; gap: 6px; align-items: center; flex-wrap: nowrap; }
+        .act-group a { white-space: nowrap; }
+    </style>
 </head>
 <body class="mod-corte">
 <div th:replace="~{fragments/navbar :: navbar}"></div>
@@ -43,6 +49,8 @@
                 <tr>
                     <th>ID</th>
                     <th>Descripción</th>
+                    <th>Proyecto</th>
+                    <th>Total Corte</th>
                     <th>Fecha</th>
                     <th>Acciones</th>
                 </tr>
@@ -50,19 +58,25 @@
             <tbody id="tbody">
 
                 <tr th:if="${#lists.isEmpty(corte)}">
-                    <td colspan="4" class="empty">No hay cortes registrados aún.</td>
+                    <td colspan="6" class="empty">No hay cortes registrados aún.</td>
                 </tr>
 
                 <tr th:each="c : ${corte}" th:attr="data-name=${#strings.toLowerCase(c.descripcion)}">
                     <td><span class="td-id" th:text="'#' + ${c.id}"></span></td>
                     <td><span class="td-bold" th:text="${c.descripcion}">--</span></td>
+                    <td th:text="${c.presupuesto.proyecto.nombre}">--</td>
+                    <td><span class="td-accent"
+                              th:text="'$ ' + ${#numbers.formatDecimal(c.totalCorte != null ? c.totalCorte : 0, 1, 'COMMA', 0, 'POINT')}">--</span>
+                    </td>
                     <td th:text="${c.fecha}">--</td>
                     <td>
-                        <a class="Detalle" th:href="@{/detalleCorte/corte/{id}(id=${c.id})}">Detalle</a>
-                        <a class="editar" th:href="@{/cortes/form/{id}(id=${c.id})}">Editar</a>
-                        <a class="eliminar"
-                           th:href="@{/cortes/eliminar/{id}(id=${c.id})}"
-                           onclick="return confirm('¿Seguro que deseas eliminar este corte?');">Eliminar</a>
+                        <div class="act-group">
+                            <a class="ver-detalle" th:href="@{/detalleCorte/corte/{id}(id=${c.id})}">Detalle</a>
+                            <a class="editar" th:href="@{/cortes/form/{id}(id=${c.id})}">Editar</a>
+                            <a class="eliminar"
+                               th:href="@{/cortes/eliminar/{id}(id=${c.id})}"
+                               onclick="return confirm('¿Seguro que deseas eliminar este corte?');">Eliminar</a>
+                        </div>
                     </td>
                 </tr>
 

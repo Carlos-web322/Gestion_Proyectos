@@ -81,18 +81,19 @@ public class DetalleCorteController {
         detalleCorte.setSubtotal(subtotal);
 
         // Validar que no supere el total del presupuesto
-        Double totalCorteActual = detalleCortedao.sumSubtotalByCorte(corte.getId());
+        Double totalCortesPresupuesto = detalleCortedao.sumSubtotalByPresupuesto(dp.getPresupuesto().getId());
         Double totalPresupuesto = dp.getPresupuesto().getTotal();
 
-        if ((totalCorteActual + subtotal) > totalPresupuesto) {
-            Double disponible = totalPresupuesto - totalCorteActual;
+        if ((totalCortesPresupuesto + subtotal) > totalPresupuesto) {
+            Double disponible = totalPresupuesto - totalCortesPresupuesto;
             model.addAttribute("error", "El corte superaría el presupuesto. Solo quedan $ " +
-                String.format("%.0f", disponible) + " disponibles.");
+                    String.format("%,.0f", disponible) + " disponibles de $ " +
+                    String.format("%,.0f", totalPresupuesto));
             model.addAttribute("detalleCorte", detalleCorte);
             model.addAttribute("cortes", corteDao.findAll());
             model.addAttribute("detallesPresupuesto", detallePresupuestoDao.findAll());
             return "detalleCorte/form";
-        }
+}
 
         detalleCorte.setCorte(corte);
         detalleCorte.setDetallePresupuesto(dp);
