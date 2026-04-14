@@ -74,4 +74,20 @@ public Double sumSubtotalByPresupuesto(Long idPresupuesto) {
                                   .getSingleResult();
     return resultado.doubleValue();
 }
+
+@Transactional
+@Override
+public void deleteByCorte(Long idCorte) {
+    em.createQuery("delete from DetalleCorte d where d.corte.id = :idCorte")
+            .setParameter("idCorte", idCorte)
+            .executeUpdate();
+}
+
+@Transactional
+@Override
+public void deleteByDetallePresupuesto(Long idDetallePresupuesto) {
+    em.createQuery("delete from DetalleCorte dc where dc.detallePresupuesto.id = :idDetallePresupuesto")
+            .setParameter("idDetallePresupuesto", idDetallePresupuesto)
+            .executeUpdate();
+}
 }

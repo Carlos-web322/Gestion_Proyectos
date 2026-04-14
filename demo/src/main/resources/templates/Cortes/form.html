@@ -10,7 +10,7 @@
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 <div class="wrap">
 
-    <a class="volver" href="/cortes/listar">
+    <a class="volver" id="linkVolver" href="/cortes/listar">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M19 12H5M12 5l-7 7 7 7"/>
         </svg>
@@ -18,6 +18,8 @@
     </a>
 
     <h1 th:text="${titulo}">Formulario de Corte</h1>
+
+    <input type="hidden" id="idPresupuestoFijoHidden" th:value="${idPresupuestoFijo}">
 
     <div class="form-card">
         <form th:action="@{/cortes/form}" th:object="${corte}" method="post">
@@ -34,15 +36,17 @@
 
             <div class="field">
                 <label for="presupuesto">Presupuesto / Proyecto</label>
-                 <select id="presupuesto" name="presupuesto.id">
-                 <option value="">-- Seleccione un presupuesto --</option>
-                <option th:each="p : ${presupuestos}"
-                    th:value="${p.id}"
-                    th:selected="${corte.presupuesto != null and corte.presupuesto.id == p.id}"
-                    th:text="${p.proyecto.nombre} + ' — $ ' + ${#numbers.formatDecimal(p.total, 1, 'COMMA', 0, 'POINT')}">
-            </option>
-            </select>
-            <p class="field-hint">Selecciona el presupuesto al que pertenece este corte</p>
+                <select id="presupuesto" name="presupuesto.id">
+                    <option value="">-- Seleccione un presupuesto --</option>
+                    <option th:each="p : ${presupuestos}"
+                            th:value="${p.id}"
+                            th:selected="${corte.presupuesto != null and corte.presupuesto.id == p.id}"
+                            th:text="${p.proyecto.nombre} + ' — $ ' + ${#numbers.formatDecimal(p.total, 1, 'COMMA', 0, 'POINT')}">
+                    </option>
+                </select>
+                <p style="color:#ff4d6d;font-size:.75rem;margin-top:5px;"
+                   th:if="${#fields.hasErrors('presupuesto')}" th:errors="*{presupuesto}"></p>
+                <p class="field-hint">Selecciona el presupuesto al que pertenece este corte</p>
             </div>
 
             <div class="field">
@@ -56,12 +60,22 @@
 
             <div class="actions">
                 <button type="submit">Guardar Corte</button>
-                <a class="btn-cancel" href="/cortes/listar">Cancelar</a>
+                <a class="btn-cancel" id="btnCancelar" href="/cortes/listar">Cancelar</a>
             </div>
 
         </form>
     </div>
 
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const idPresupuestoEl = document.getElementById('idPresupuestoFijoHidden');
+        const idPresupuesto = idPresupuestoEl ? idPresupuestoEl.value : null;
+        if (idPresupuesto && idPresupuesto !== '' && idPresupuesto !== 'null') {
+            document.getElementById('linkVolver').href = '/cortes/presupuesto/' + idPresupuesto;
+            document.getElementById('btnCancelar').href = '/cortes/presupuesto/' + idPresupuesto;
+        }
+    });
+</script>
 </body>
 </html>

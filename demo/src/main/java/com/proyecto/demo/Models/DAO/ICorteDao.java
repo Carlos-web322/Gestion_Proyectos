@@ -8,5 +8,7 @@ public interface ICorteDao {
     public void save(Corte corte);
     public Corte findOne(Long id);
     public void delete(Long id);
+    public List<Corte> findByPresupuesto(Long idPresupuesto);
+    public void deleteByPresupuesto(Long idPresupuesto);
 }
 

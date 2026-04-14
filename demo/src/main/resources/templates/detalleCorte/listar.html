@@ -14,7 +14,10 @@
         <div class="logo">Detalle Corte</div>
         <div>
             <a class="volver" href="/cortes/listar">← Cortes</a>
-            <a class="crear" href="/detalleCorte/form" style="margin-left: 16px;">+ Nuevo Detalle</a>
+            <a class="crear" style="margin-left: 16px;"
+               th:href="${not #lists.isEmpty(detalleCorte)} ? @{/detalleCorte/form/corte/{id}(id=${detalleCorte[0].corte.id})} : @{/detalleCorte/form}">
+                + Nuevo Detalle
+            </a>
         </div>
     </header>
 

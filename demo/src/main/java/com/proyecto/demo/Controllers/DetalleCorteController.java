@@ -25,7 +25,6 @@ public class DetalleCorteController {
     @Autowired
     private IDetallePresupuestoDao detallePresupuestoDao;
 
-
     @GetMapping("/listar")
     public String listar(Model model) {
         model.addAttribute("titulo", "Listado de Detalle Corte");
@@ -93,7 +92,7 @@ public class DetalleCorteController {
             model.addAttribute("cortes", corteDao.findAll());
             model.addAttribute("detallesPresupuesto", detallePresupuestoDao.findAll());
             return "detalleCorte/form";
-}
+        }
 
         detalleCorte.setCorte(corte);
         detalleCorte.setDetallePresupuesto(dp);
@@ -103,16 +102,19 @@ public class DetalleCorteController {
         Double nuevoTotal = detalleCortedao.sumSubtotalByCorte(corte.getId());
         corte.setTotalCorte(nuevoTotal);
         corteDao.save(corte);
-
-        return "redirect:/detalleCorte/listar";
+        
+        return "redirect:/detalleCorte/corte/" + corte.getId();
+        //return "redirect:/detalleCorte/listar";
     }
 
     @GetMapping("/form/{id}")
     public String editar(@PathVariable Long id, Model model) {
         model.addAttribute("titulo", "Editar Detalle Corte");
-        model.addAttribute("detalleCorte", detalleCortedao.findOne(id));
-        model.addAttribute("cortes", corteDao.findAll());
-        model.addAttribute("detallesPresupuesto", detallePresupuestoDao.findAll());
+        DetalleCorte dc = detalleCortedao.findOne(id);
+        model.addAttribute("detalleCorte", dc);
+        model.addAttribute("cortes", corteDao.findByPresupuesto(dc.getCorte().getPresupuesto().getId()));
+        model.addAttribute("detallesPresupuesto",
+                detallePresupuestoDao.findByPresupuesto(dc.getCorte().getPresupuesto().getId()));
         return "detalleCorte/form";
     }
 
@@ -127,5 +129,22 @@ public class DetalleCorteController {
         model.addAttribute("titulo", "Detalles del Corte");
         model.addAttribute("detalleCorte", detalleCortedao.findByCorte(idCorte));
         return "detalleCorte/listar";
+    }
+
+    // Filtro por corte con formulario prellenado
+    @GetMapping("/form/corte/{idCorte}")
+    public String crearParaCorte(@PathVariable Long idCorte, Model model) {
+        model.addAttribute("titulo", "Nuevo Detalle Corte");
+
+        Corte corte = corteDao.findOne(idCorte);
+        DetalleCorte detalleCorte = new DetalleCorte();
+        detalleCorte.setCorte(corte);
+
+        model.addAttribute("detalleCorte", detalleCorte);
+        model.addAttribute("cortes", corteDao.findByPresupuesto(corte.getPresupuesto().getId()));
+        model.addAttribute("detallesPresupuesto",
+                detallePresupuestoDao.findByPresupuesto(corte.getPresupuesto().getId()));
+        model.addAttribute("idCorteFijo", idCorte); // ← nombre correcto
+        return "detalleCorte/form";
     }
 }

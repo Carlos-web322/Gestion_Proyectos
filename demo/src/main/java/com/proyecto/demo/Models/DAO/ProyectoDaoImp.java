@@ -42,9 +42,26 @@ public class ProyectoDaoImp implements IProyectoDao {
     }
 
     // Método Eliminar Proyecto por ID
-    @Override
     @Transactional
+    @Override
     public void delete(Long id) {
-        em.remove(findOne(id));
+        // Usar SQL nativo para evitar problemas de referencias circulares
+        em.createNativeQuery(
+                "DELETE FROM detalle_corte WHERE id_corte IN (SELECT id FROM cortes WHERE id_presupuesto IN (SELECT id FROM presupuestos WHERE id_proyecto = :id))")
+                .setParameter("id", id).executeUpdate();
+
+        em.createNativeQuery(
+                "DELETE FROM cortes WHERE id_presupuesto IN (SELECT id FROM presupuestos WHERE id_proyecto = :id)")
+                .setParameter("id", id).executeUpdate();
+
+        em.createNativeQuery(
+                "DELETE FROM detalle_presupuesto WHERE id_presupuesto IN (SELECT id FROM presupuestos WHERE id_proyecto = :id)")
+                .setParameter("id", id).executeUpdate();
+
+        em.createNativeQuery("DELETE FROM presupuestos WHERE id_proyecto = :id")
+                .setParameter("id", id).executeUpdate();
+
+        em.createNativeQuery("DELETE FROM proyectos WHERE id = :id")
+                .setParameter("id", id).executeUpdate();
     }
 }

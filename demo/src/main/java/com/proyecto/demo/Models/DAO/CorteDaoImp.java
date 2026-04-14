@@ -42,6 +42,26 @@ public class CorteDaoImp implements ICorteDao {
     @Transactional
     @Override
     public void delete(Long id) {
-        em.remove(findOne(id));
+        Corte corte = findOne(id);
+        corte.setPresupuesto(null);
+        em.merge(corte);
+        em.remove(corte);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Transactional(readOnly = true)
+    @Override
+    public List<Corte> findByPresupuesto(Long idPresupuesto) {
+        return em.createQuery("from Corte c where c.presupuesto.id = :idPresupuesto")
+                .setParameter("idPresupuesto", idPresupuesto)
+                .getResultList();
+    }
+
+    @Transactional
+    @Override
+    public void deleteByPresupuesto(Long idPresupuesto) {
+        em.createQuery("delete from Corte c where c.presupuesto.id = :idPresupuesto")
+                .setParameter("idPresupuesto", idPresupuesto)
+                .executeUpdate();
     }
 }

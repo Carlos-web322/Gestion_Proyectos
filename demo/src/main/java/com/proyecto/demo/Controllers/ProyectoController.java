@@ -15,7 +15,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.proyecto.demo.Models.DAO.IProyectoDao;
 import com.proyecto.demo.Models.DAO.IDetallePresupuestoDao;
+import com.proyecto.demo.Models.DAO.IPresupuestoDao;
+import com.proyecto.demo.Models.DAO.ICorteDao;
+import com.proyecto.demo.Models.DAO.IDetalleCorteDao;
 import com.proyecto.demo.Models.Entity.Proyecto;
+import com.proyecto.demo.Models.Entity.Corte;
+
 
 import jakarta.validation.Valid;
 
@@ -29,24 +34,29 @@ public class ProyectoController {
     @Autowired
     private IDetallePresupuestoDao detalleDao;
 
+    @Autowired
+    private IPresupuestoDao presupuestoDao;
+
+    @Autowired
+    private ICorteDao corteDao;
+
+    @Autowired
+    private IDetalleCorteDao detalleCortedao;
+
     // Método Listar Proyectos
     @GetMapping("/listar")
     public String Listar(Model model) {
-
         List<Proyecto> proyectos = proyectoDao.findAll();
-    
-         // Mapa de idProyecto -> total
+
         Map<Long, Double> totales = new HashMap<>();
         for (Proyecto p : proyectos) {
-        totales.put(p.getId(), detalleDao.sumSubtotalByProyecto(p.getId()));
+            totales.put(p.getId(), detalleDao.sumSubtotalByProyecto(p.getId()));
         }
 
         model.addAttribute("titulo", "Listado de Proyectos");
         model.addAttribute("proyecto", proyectos);
-        model.addAttribute("totales",totales );
-    
+        model.addAttribute("totales", totales);
         return "listar";
-
     }
 
     // Método Formulario Crear Proyecto
@@ -82,9 +92,29 @@ public class ProyectoController {
     // Método Eliminar Proyecto por ID
     @GetMapping("/eliminar/{id}")
     public String Eliminar(@PathVariable(value = "id") long id) {
-        proyectoDao.delete(id);
-        return "redirect:/listar";
-    }
+        Proyecto proyecto = proyectoDao.findOne(id);
 
+        if (proyecto.getPresupuesto() != null) {
+            Long idPresupuesto = proyecto.getPresupuesto().getId();
 
+            // 1. Eliminar detalles corte
+            List<Corte> cortes = corteDao.findByPresupuesto(idPresupuesto);
+            for (Corte corte : cortes) {
+                detalleCortedao.deleteByCorte(corte.getId());
+            }
+
+            // 2. Romper relación corte-presupuesto con query directa
+            corteDao.deleteByPresupuesto(idPresupuesto);
+
+            // 3. Eliminar detalles presupuesto
+            detalleDao.deleteByPresupuesto(idPresupuesto);
+
+            // 4. Romper relación presupuesto-proyecto con query directa
+            presupuestoDao.deleteByProyecto(id);
+        }
+
+    // 5. Eliminar proyecto
+    proyectoDao.delete(id);
+    return "redirect:/listar";
+}
 }

@@ -31,7 +31,7 @@
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 <div class="wrap">
 
-    <a class="volver" href="/detalleCorte/listar">
+    <a class="volver" id="linkVolver" href="/detalleCorte/listar">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M19 12H5M12 5l-7 7 7 7"/>
         </svg>
@@ -39,6 +39,8 @@
     </a>
 
     <h1 th:text="${titulo}">Formulario de Detalle Corte</h1>
+
+    <input type="hidden" id="idCorteFijoHidden" th:value="${idCorteFijo}">
 
     <!-- Mensaje de error -->
     <div th:if="${error}" style="background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.3);
@@ -92,7 +94,7 @@
 
             <div class="actions">
                 <button type="submit">Guardar Detalle Corte</button>
-                <a class="btn-cancel" href="/detalleCorte/listar">Cancelar</a>
+                <a class="btn-cancel" id="btnCancelar" href="/detalleCorte/listar">Cancelar</a>
             </div>
 
         </form>
@@ -119,9 +121,15 @@
         });
     }
 
-    window.onload = function() {
+    document.addEventListener('DOMContentLoaded', function() {
         calcularSubtotal();
-    };
+        const idCorteEl = document.getElementById('idCorteFijoHidden');
+        const idCorte = idCorteEl ? idCorteEl.value : null;
+        if (idCorte && idCorte !== '' && idCorte !== 'null') {
+            document.getElementById('linkVolver').href = '/detalleCorte/corte/' + idCorte;
+            document.getElementById('btnCancelar').href = '/detalleCorte/corte/' + idCorte;
+        }
+    });
 </script>
 </body>
-</html>
+</html> 

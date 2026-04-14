@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Presupuestos</title>
     <link rel="stylesheet" th:href="@{/CSS/styles.css}">
+    <style>
+        .table-wrap { overflow-x: auto; }
+        .act-group { display: flex; gap: 6px; flex-wrap: nowrap; align-items: center; }
+        .act-group a { white-space: nowrap; }
+    </style>
 </head>
 <body class="mod-presupuesto">
 <div th:replace="~{fragments/navbar :: navbar}"></div>
@@ -47,26 +52,35 @@
                 <tr>
                     <th>ID</th>
                     <th>Proyecto</th>
-                    <th>Total</th>
+                    <th>Total Presupuesto</th>
+                    <th>Total Corte Obra</th>
+                    <th>Disponible</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody id="tbody">
 
                 <tr th:if="${#lists.isEmpty(presupuesto)}">
-                    <td colspan="4" class="empty">No hay presupuestos registrados aún.</td>
+                    <td colspan="6" class="empty">No hay presupuestos registrados aún.</td>
                 </tr>
 
                 <tr th:each="p : ${presupuesto}" th:attr="data-name=${#strings.toLowerCase(p.proyecto.nombre)}">
                     <td><span class="td-id" th:text="'#' + ${p.id}"></span></td>
                     <td><span class="td-bold" th:text="${p.proyecto.nombre}">--</span></td>
-                    <td><span class="td-accent" th:text="'$ ' + ${#numbers.formatDecimal(p.total, 1, 'COMMA', 0, 'POINT')}">--</span></td>
+                    <td><span class="td-accent"
+                              th:text="'$ ' + ${#numbers.formatDecimal(p.total, 1, 'COMMA', 0, 'POINT')}">--</span></td>
+                    <td><span style="color:#f59e0b;font-weight:700;"
+                              th:text="'$ ' + ${#numbers.formatDecimal(totalCorteObra[p.id], 1, 'COMMA', 0, 'POINT')}">--</span></td>
+                    <td><span th:style="${presupuestoDisponible[p.id] < 0} ? 'color:#ff4d6d;font-weight:700;' : 'color:#43e97b;font-weight:700;'"
+                              th:text="'$ ' + ${#numbers.formatDecimal(presupuestoDisponible[p.id], 1, 'COMMA', 0, 'POINT')}">--</span></td>
                     <td>
-                        <!--<a class="editar" th:href="@{/presupuestos/form/{id}(id=${p.id})}">Editar</a> -->
-                        <a class="ver-detalle" th:href="@{/detalles/presupuesto/{id}(id=${p.id})}">Ver Detalle</a>
-                        <a class="eliminar"
-                           th:href="@{/presupuestos/eliminar/{id}(id=${p.id})}"
-                           onclick="return confirm('¿Seguro que deseas eliminar este presupuesto?');">Eliminar</a>
+                        <div class="act-group">
+                            <a class="ver-detalle" th:href="@{/detalles/presupuesto/{id}(id=${p.id})}">Ver Detalle</a>
+                            <a class="ver-detalle" th:href="@{/cortes/presupuesto/{id}(id=${p.id})}">Ver Cortes</a>
+                            <a class="eliminar"
+                               th:href="@{/presupuestos/eliminar/{id}(id=${p.id})}"
+                               onclick="return confirm('¿Seguro que deseas eliminar este presupuesto?');">Eliminar</a>
+                        </div>
                     </td>
                 </tr>
 

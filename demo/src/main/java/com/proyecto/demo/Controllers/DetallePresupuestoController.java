@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import com.proyecto.demo.Models.DAO.IDetalleCorteDao;
 import com.proyecto.demo.Models.DAO.IDetallePresupuestoDao;
 import com.proyecto.demo.Models.DAO.IPresupuestoDao;
 import com.proyecto.demo.Models.Entity.DetallePresupuesto;
@@ -112,11 +113,17 @@ public class DetallePresupuestoController {
         return "detalles/form";
     }
 
-    @GetMapping("/eliminar/{id}")
-    public String eliminar(@PathVariable Long id) {
-        detalleDao.delete(id);
-        return "redirect:/detalles/listar";
-    }
+   @Autowired
+private IDetalleCorteDao detalleCortedao;
+
+@GetMapping("/eliminar/{id}")
+public String eliminar(@PathVariable Long id) {
+    // Primero eliminar detalles corte que referencian este detalle presupuesto
+    detalleCortedao.deleteByDetallePresupuesto(id);
+    // Luego eliminar el detalle presupuesto
+    detalleDao.delete(id);
+    return "redirect:/detalles/listar";
+}
 
     @GetMapping("/presupuesto/{idPresupuesto}")
     public String listarPorPresupuesto(@PathVariable Long idPresupuesto, Model model) {

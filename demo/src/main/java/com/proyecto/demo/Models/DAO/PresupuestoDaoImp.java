@@ -55,4 +55,12 @@ public class PresupuestoDaoImp implements IPresupuestoDao {
                 .setParameter("idProyecto", idProyecto)
                 .getResultList();
     }
+   
+    @Transactional
+    @Override
+    public void deleteByProyecto(Long idProyecto) {
+        em.createQuery("delete from Presupuesto p where p.proyecto.id = :idProyecto")
+                .setParameter("idProyecto", idProyecto)
+                .executeUpdate();
+    }
 }

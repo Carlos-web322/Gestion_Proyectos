@@ -77,4 +77,12 @@ public class DetallePresupuestoDaoImp implements IDetallePresupuestoDao {
                 .setParameter("idPresupuesto", idPresupuesto)
                 .getResultList();
     }
+
+    @Transactional
+    @Override
+    public void deleteByPresupuesto(Long idPresupuesto) {
+        em.createQuery("delete from DetallePresupuesto d where d.presupuesto.id = :idPresupuesto")
+                .setParameter("idPresupuesto", idPresupuesto)
+                .executeUpdate();
+    }
 }
