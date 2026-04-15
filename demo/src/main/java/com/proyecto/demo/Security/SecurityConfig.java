@@ -23,11 +23,12 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
-    // ESTE BLOQUE ES VITAL: Ignora los recursos antes de que entren a la seguridad
+    // Ignora los recursos estáticos para que no pasen por los filtros de seguridad
+    // Esto asegura que el CSS se cargue incluso antes del login
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
-            .requestMatchers("/CSS/**", "/js/**", "/images/**", "/static/**");
+            .requestMatchers("/css/**", "/js/**", "/images/**", "/static/**", "/favicon.ico");
     }
 
     @Bean
@@ -35,8 +36,8 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                // Autorizamos explícitamente las carpetas y rutas públicas
-                .requestMatchers("/CSS/**", "/js/**", "/images/**", "/registro", "/login").permitAll()
+                // Definimos explícitamente las rutas públicas en minúsculas
+                .requestMatchers("/css/**", "/js/**", "/images/**", "/registro", "/login").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
