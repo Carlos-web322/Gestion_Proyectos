@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -22,12 +23,20 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
+    // ESTE BLOQUE ES VITAL: Ignora los recursos antes de que entren a la seguridad
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring()
+            .requestMatchers("/CSS/**", "/js/**", "/images/**", "/static/**");
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/CSS/**", "/js/**", "/images/**", "/registro").permitAll()
+                // Autorizamos explícitamente las carpetas y rutas públicas
+                .requestMatchers("/CSS/**", "/js/**", "/images/**", "/registro", "/login").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
