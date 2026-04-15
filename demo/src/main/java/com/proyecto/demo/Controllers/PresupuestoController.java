@@ -100,8 +100,22 @@ public class PresupuestoController {
 
     @GetMapping("/proyecto/{idProyecto}")
     public String listarPorProyecto(@PathVariable Long idProyecto, Model model) {
+        List<Presupuesto> presupuestos = presupuestoDao.findByProyecto(idProyecto);
+
+        Map<Long, Double> totalCorteObra = new HashMap<>();
+        Map<Long, Double> presupuestoDisponible = new HashMap<>();
+
+        for (Presupuesto p : presupuestos) {
+            Double totalCorte = detalleCortedao.sumSubtotalByPresupuesto(p.getId());
+            Double totalPresupuesto = p.getTotal() != null ? p.getTotal() : 0.0;
+            totalCorteObra.put(p.getId(), totalCorte);
+            presupuestoDisponible.put(p.getId(), totalPresupuesto - totalCorte);
+        }
+
         model.addAttribute("titulo", "Presupuesto del Proyecto");
-        model.addAttribute("presupuesto", presupuestoDao.findByProyecto(idProyecto));
+        model.addAttribute("presupuesto", presupuestos);
+        model.addAttribute("totalCorteObra", totalCorteObra);
+        model.addAttribute("presupuestoDisponible", presupuestoDisponible);
         return "presupuestos/listar";
     }
 }

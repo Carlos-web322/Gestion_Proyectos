@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GestorPro — Acceso</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg:      #08080f;
+            --surface: #111118;
+            --border:  #1e1e2e;
+            --text:    #e8e8f0;
+            --muted:   #52526a;
+            --accent:  #635bff;
+            --accent2: #ff6584;
+            --green:   #43e97b;
+            --red:     #ff4d6d;
+            --yellow:  #f59e0b;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image:
+                radial-gradient(ellipse at 20% 20%, rgba(99,91,255,.12) 0, transparent 55%),
+                radial-gradient(ellipse at 80% 80%, rgba(255,101,132,.08) 0, transparent 55%);
+            overflow: hidden;
+        }
+
+        .auth-container {
+            position: relative;
+            width: 860px;
+            height: 540px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 40px 80px rgba(0,0,0,.5);
+        }
+
+        .overlay-container {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 50%;
+            height: 100%;
+            z-index: 100;
+            transition: transform 0.6s cubic-bezier(0.77,0,0.175,1);
+        }
+
+        .auth-container.register-mode .overlay-container {
+            transform: translateX(-100%);
+        }
+
+        .overlay {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #635bff 0%, #8b5cf6 50%, #ff6584 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 48px;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .overlay::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        .overlay-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,.06);
+        }
+
+        .overlay-circle:nth-child(1) { width: 200px; height: 200px; top: -60px; right: -60px; }
+        .overlay-circle:nth-child(2) { width: 140px; height: 140px; bottom: -40px; left: -40px; }
+
+        .overlay-logo {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .overlay h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .overlay p {
+            font-size: .88rem;
+            color: rgba(255,255,255,.75);
+            line-height: 1.6;
+            margin-bottom: 28px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .overlay-btn {
+            background: transparent;
+            border: 2px solid rgba(255,255,255,.8);
+            color: #fff;
+            padding: 11px 32px;
+            border-radius: 24px;
+            font-family: 'Syne', sans-serif;
+            font-size: .82rem;
+            font-weight: 700;
+            letter-spacing: .8px;
+            cursor: pointer;
+            transition: all .2s;
+            position: relative;
+            z-index: 1;
+        }
+
+        .overlay-btn:hover { background: rgba(255,255,255,.15); border-color: #fff; }
+
+        .forms-container {
+            position: absolute;
+            inset: 0;
+            display: flex;
+        }
+
+        .form-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 36px 44px;
+        }
+
+        .form-panel h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+
+        .form-subtitle {
+            color: var(--muted);
+            font-size: .82rem;
+            margin-bottom: 20px;
+        }
+
+        .alert {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: .82rem;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alert-error   { background: rgba(255,77,109,.08);  border: 1px solid rgba(255,77,109,.25);  color: var(--red);   }
+        .alert-success { background: rgba(67,233,123,.08);  border: 1px solid rgba(67,233,123,.25);  color: var(--green); }
+
+        .field { width: 100%; margin-bottom: 12px; }
+
+        .field label {
+            display: block;
+            font-family: 'Syne', sans-serif;
+            font-size: .68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .input-wrap { position: relative; }
+
+        .input-wrap svg.input-icon {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted);
+            pointer-events: none;
+            transition: color .2s;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 11px 40px 11px 40px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: .88rem;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(99,91,255,.12); }
+        input::placeholder { color: #2a2a3e; }
+
+        .toggle-pass {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--muted);
+            padding: 2px;
+            transition: color .2s;
+            display: flex;
+        }
+
+        .toggle-pass:hover { color: var(--text); }
+
+        .strength-wrap { margin-top: 8px; display: none; }
+        .strength-bars { display: flex; gap: 4px; margin-bottom: 4px; }
+
+        .strength-bar {
+            flex: 1;
+            height: 3px;
+            border-radius: 2px;
+            background: var(--border);
+            transition: background .3s;
+        }
+
+        .strength-bar.active-weak   { background: var(--red);    }
+        .strength-bar.active-fair   { background: var(--yellow);  }
+        .strength-bar.active-strong { background: var(--green);   }
+        .strength-label { font-size: .72rem; color: var(--muted); }
+
+        .pass-checks { display: none; flex-direction: column; gap: 4px; margin-top: 8px; }
+
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: .75rem;
+            color: var(--muted);
+            transition: color .2s;
+        }
+
+        .check-item.ok { color: var(--green); }
+
+        .check-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 1.5px solid var(--muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all .2s;
+        }
+
+        .check-item.ok .check-dot { border-color: var(--green); background: rgba(67,233,123,.15); }
+        .check-dot svg { display: none; }
+        .check-item.ok .check-dot svg { display: block; }
+
+        .field-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 16px;
+        }
+
+        .remember { display: flex; align-items: center; gap: 7px; }
+
+        .remember input[type="checkbox"] {
+            width: 14px;
+            height: 14px;
+            accent-color: var(--accent);
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .remember label {
+            font-size: .8rem;
+            color: var(--muted);
+            text-transform: none;
+            letter-spacing: 0;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer;
+        }
+
+        .forgot-link { font-size: .78rem; color: var(--accent); text-decoration: none; transition: opacity .2s; }
+        .forgot-link:hover { opacity: .7; }
+
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #635bff, #8b5cf6);
+            color: #fff;
+            border: none;
+            padding: 13px;
+            border-radius: 10px;
+            font-family: 'Syne', sans-serif;
+            font-size: .86rem;
+            font-weight: 800;
+            letter-spacing: .5px;
+            cursor: pointer;
+            transition: all .25s;
+            box-shadow: 0 4px 20px rgba(99,91,255,.28);
+        }
+
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(99,91,255,.4); }
+        .btn-submit:active { transform: translateY(0); }
+        .btn-submit:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateX(-50%) translateY(-16px); }
+            to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="auth-container" id="authContainer">
+
+    <div class="forms-container">
+
+        <!-- ═══ PANEL LOGIN (izquierda) ═══ -->
+        <div class="form-panel" id="loginPanel">
+            <h2>Iniciar Sesión</h2>
+            <p class="form-subtitle">Bienvenido de nuevo a GestorPro</p>
+
+            <!-- Error de credenciales -->
+            <div class="alert alert-error" th:if="${param.error}">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+               ❌ Usuario o contraseña incorrectos.
+            </div>
+
+            <!-- Logout exitoso -->
+            <div class="alert alert-success" th:if="${param.logout}">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                Sesión cerrada correctamente.
+            </div>
+
+            <form th:action="@{/login}" method="post" style="width:100%">
+                <div class="field">
+                    <label>Usuario</label>
+                    <div class="input-wrap">
+                        <svg class="input-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        <input type="text" name="username" placeholder="Tu usuario" autocomplete="username">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Contraseña</label>
+                    <div class="input-wrap">
+                        <svg class="input-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                        <input type="password" id="loginPass" name="password" placeholder="••••••••" autocomplete="current-password">
+                        <button type="button" class="toggle-pass" onclick="togglePass('loginPass', this)">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="field-row">
+                    <div class="remember">
+                        <input type="checkbox" id="remember">
+                        <label for="remember">Recordarme</label>
+                    </div>
+                    <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
+                </div>
+
+                <button class="btn-submit" type="submit">Ingresar</button>
+            </form>
+        </div>
+
+        <!-- ═══ PANEL REGISTRO (derecha) ═══ -->
+        <div class="form-panel" id="registerPanel">
+            <h2>Crear Cuenta</h2>
+            <p class="form-subtitle">Únete a GestorPro</p>
+
+            <!-- Error usuario existe — visible en panel registro -->
+            <div class="alert alert-error" th:if="${param.errorRegistro}">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                Upps ⚠️ el usuario ya está registrado.
+            </div>
+
+            <form id="registerForm" th:action="@{/registro}" method="post"
+                  style="width:100%" onsubmit="return validateRegister()">
+
+                <div class="field">
+                    <label>Usuario</label>
+                    <div class="input-wrap">
+                        <svg class="input-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        <input type="text" id="regUser" name="username"
+                               placeholder="Elige un usuario"
+                               oninput="checkMatch()" autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Contraseña</label>
+                    <div class="input-wrap">
+                        <svg class="input-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                        <input type="password" id="regPass" name="password"
+                               placeholder="Crea una contraseña segura"
+                               oninput="checkStrength()" onfocus="showChecks()"
+                               autocomplete="new-password">
+                        <button type="button" class="toggle-pass" onclick="togglePass('regPass', this)">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="strength-wrap" id="strengthWrap">
+                        <div class="strength-bars">
+                            <div class="strength-bar" id="bar1"></div>
+                            <div class="strength-bar" id="bar2"></div>
+                            <div class="strength-bar" id="bar3"></div>
+                            <div class="strength-bar" id="bar4"></div>
+                        </div>
+                        <span class="strength-label" id="strengthLabel">Escribe tu contraseña</span>
+                    </div>
+
+                    <div class="pass-checks" id="passChecks">
+                        <div class="check-item" id="chkLen">
+                            <div class="check-dot"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            Mínimo 8 caracteres
+                        </div>
+                        <div class="check-item" id="chkUpper">
+                            <div class="check-dot"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            Una letra mayúscula
+                        </div>
+                        <div class="check-item" id="chkNum">
+                            <div class="check-dot"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            Un número
+                        </div>
+                        <div class="check-item" id="chkSpec">
+                            <div class="check-dot"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            Un carácter especial (!@#$...)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Confirmar Contraseña</label>
+                    <div class="input-wrap">
+                        <svg class="input-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                        <input type="password" id="regConfirm"
+                               placeholder="Repite tu contraseña"
+                               oninput="checkMatch()" autocomplete="new-password">
+                        <button type="button" class="toggle-pass" onclick="togglePass('regConfirm', this)">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <p id="matchMsg" style="font-size:.75rem;margin-top:6px;display:none;transition:color .2s;"></p>
+                </div>
+
+                <button class="btn-submit" type="submit" id="regBtn" disabled>Crear Cuenta</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ═══ PANEL DESLIZANTE ═══ -->
+    <div class="overlay-container" id="overlayContainer">
+        <div class="overlay">
+            <div class="overlay-circle"></div>
+            <div class="overlay-circle"></div>
+            <div class="overlay-logo">GestorPro</div>
+            <h3 id="overlayTitle">¿Primera vez?</h3>
+            <p id="overlayText">Crea tu cuenta y empieza a gestionar tus proyectos con precisión total.</p>
+            <button class="overlay-btn" id="overlayBtn" onclick="toggleMode()">Crear Cuenta</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let isRegister = false;
+
+    function toggleMode() {
+        isRegister = !isRegister;
+        const container = document.getElementById('authContainer');
+        const title     = document.getElementById('overlayTitle');
+        const text      = document.getElementById('overlayText');
+        const btn       = document.getElementById('overlayBtn');
+
+        if (isRegister) {
+            container.classList.add('register-mode');
+            title.textContent = '¿Ya tienes cuenta?';
+            text.textContent  = 'Inicia sesión y continúa donde lo dejaste.';
+            btn.textContent   = 'Iniciar Sesión';
+        } else {
+            container.classList.remove('register-mode');
+            title.textContent = '¿Primera vez?';
+            text.textContent  = 'Crea tu cuenta y empieza a gestionar tus proyectos con precisión total.';
+            btn.textContent   = 'Crear Cuenta';
+        }
+    }
+
+    function togglePass(id, btn) {
+        const input = document.getElementById(id);
+        const svg   = btn.querySelector('svg');
+        if (input.type === 'password') {
+            input.type = 'text';
+            svg.innerHTML = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>`;
+        } else {
+            input.type = 'password';
+            svg.innerHTML = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+        }
+    }
+
+    function showChecks() {
+        document.getElementById('strengthWrap').style.display = 'block';
+        document.getElementById('passChecks').style.display   = 'flex';
+    }
+
+    function checkStrength() {
+        const pass  = document.getElementById('regPass').value;
+        const bars  = ['bar1','bar2','bar3','bar4'].map(id => document.getElementById(id));
+        const label = document.getElementById('strengthLabel');
+
+        const hasLen   = pass.length >= 8;
+        const hasUpper = /[A-Z]/.test(pass);
+        const hasNum   = /[0-9]/.test(pass);
+        const hasSpec  = /[!@#$%^&*(),.?":{}|<>]/.test(pass);
+
+        document.getElementById('chkLen').classList.toggle('ok', hasLen);
+        document.getElementById('chkUpper').classList.toggle('ok', hasUpper);
+        document.getElementById('chkNum').classList.toggle('ok', hasNum);
+        document.getElementById('chkSpec').classList.toggle('ok', hasSpec);
+
+        const score = [hasLen, hasUpper, hasNum, hasSpec].filter(Boolean).length;
+        bars.forEach(b => b.className = 'strength-bar');
+
+        if (pass.length === 0) {
+            label.textContent = 'Escribe tu contraseña';
+            label.style.color = 'var(--muted)';
+        } else if (score <= 1) {
+            bars[0].classList.add('active-weak');
+            label.textContent = 'Muy débil';
+            label.style.color = 'var(--red)';
+        } else if (score === 2) {
+            bars[0].classList.add('active-fair');
+            bars[1].classList.add('active-fair');
+            label.textContent = 'Débil';
+            label.style.color = 'var(--yellow)';
+        } else if (score === 3) {
+            bars[0].classList.add('active-strong');
+            bars[1].classList.add('active-strong');
+            bars[2].classList.add('active-strong');
+            label.textContent = 'Buena';
+            label.style.color = 'var(--green)';
+        } else {
+            bars.forEach(b => b.classList.add('active-strong'));
+            label.textContent = '¡Excelente!';
+            label.style.color = 'var(--green)';
+        }
+
+        checkMatch();
+    }
+
+    function checkMatch() {
+        const pass    = document.getElementById('regPass').value;
+        const confirm = document.getElementById('regConfirm').value;
+        const user    = document.getElementById('regUser').value;
+        const msg     = document.getElementById('matchMsg');
+
+        const hasLen   = pass.length >= 8;
+        const hasUpper = /[A-Z]/.test(pass);
+        const hasNum   = /[0-9]/.test(pass);
+        const hasSpec  = /[!@#$%^&*(),.?":{}|<>]/.test(pass);
+        const allOk    = hasLen && hasUpper && hasNum && hasSpec;
+
+        if (confirm.length > 0) {
+            msg.style.display = 'block';
+            if (pass === confirm) {
+                msg.textContent = '✓ Las contraseñas coinciden';
+                msg.style.color = 'var(--green)';
+            } else {
+                msg.textContent = '✗ Las contraseñas no coinciden';
+                msg.style.color = 'var(--red)';
+            }
+        } else {
+            msg.style.display = 'none';
+        }
+
+        const match = pass === confirm && confirm.length > 0;
+        document.getElementById('regBtn').disabled = !(user.trim() && allOk && match);
+    }
+
+    function validateRegister() {
+        const pass    = document.getElementById('regPass').value;
+        const confirm = document.getElementById('regConfirm').value;
+        const user    = document.getElementById('regUser').value;
+
+        const hasLen   = pass.length >= 8;
+        const hasUpper = /[A-Z]/.test(pass);
+        const hasNum   = /[0-9]/.test(pass);
+        const hasSpec  = /[!@#$%^&*(),.?":{}|<>]/.test(pass);
+        const allOk    = hasLen && hasUpper && hasNum && hasSpec;
+        const match    = pass === confirm;
+
+        return !!(user.trim() && allOk && match);
+    }
+
+    window.onload = function() {
+        const params = new URLSearchParams(window.location.search);
+
+        // Toast flotante cuando el registro es exitoso
+        if (params.has('registroOk')) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
+                background: rgba(67,233,123,.12); border: 1px solid rgba(67,233,123,.3);
+                color: #43e97b; padding: 12px 24px; border-radius: 10px;
+                font-family: 'DM Sans', sans-serif; font-size: .88rem;
+                z-index: 9999; display: flex; align-items: center; gap: 8px;
+                box-shadow: 0 8px 24px rgba(0,0,0,.3);
+                animation: slideDown .3s ease both;
+            `;
+            toast.innerHTML = `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                ¡Cuenta creada! Ya puedes iniciar sesión.
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
+        }
+
+        // Si viene error de registro, abrir panel de registro con el error visible
+        if (params.has('errorRegistro')) {
+            setTimeout(() => toggleMode(), 100);
+        }
+    };
+</script>
+
+</body>
+</html>
