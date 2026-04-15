@@ -5,24 +5,41 @@
     <div class="navbar-wrap">
         <div class="navbar-logo">GestorPro</div>
         <div class="navbar-links">
+
+            <!-- Dashboard -->
+            <a th:href="@{/dashboard}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                    <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+                </svg>
+                Dashboard
+            </a>
+
+            <!-- Proyectos -->
             <a th:href="@{/listar}">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
                 </svg>
                 Proyectos
             </a>
+
+            <!-- Materiales -->
             <a th:href="@{/materiales/listar}">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
                 </svg>
                 Materiales
             </a>
+
+            <!-- Presupuestos -->
             <a th:href="@{/presupuestos/listar}">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
                 </svg>
                 Presupuestos
             </a>
+
+            <!-- Detalles -->
             <a th:href="@{/detalles/listar}">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/>
@@ -31,6 +48,8 @@
                 </svg>
                 Detalles
             </a>
+
+            <!-- Cortes -->
             <a th:href="@{/cortes/listar}">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -38,6 +57,8 @@
                 </svg>
                 Cortes
             </a>
+
+            <!-- Det. Corte -->
             <a th:href="@{/detalleCorte/listar}">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
@@ -45,7 +66,7 @@
                 Det. Corte
             </a>
 
-            <!-- Botón cerrar sesión -->
+            <!-- Cerrar sesión -->
             <form th:action="@{/logout}" method="post" style="margin:0;display:flex;align-items:center;">
                 <button type="submit" class="navbar-logout">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -56,6 +77,7 @@
                     Salir
                 </button>
             </form>
+
         </div>
     </div>
 </nav>

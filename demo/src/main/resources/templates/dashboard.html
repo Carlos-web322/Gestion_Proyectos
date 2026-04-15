@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GestorPro — Dashboard</title>
+    <link rel="stylesheet" th:href="@{/CSS/styles.css}">
+    <style>
+        /* ── Dashboard específico ── */
+        .dash-wrap {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* ── Header ── */
+        .dash-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            animation: fadeDown .5s ease both;
+        }
+
+        .dash-greeting {
+            font-family: 'Syne', sans-serif;
+        }
+
+        .dash-greeting-sub {
+            font-size: .82rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            letter-spacing: .5px;
+        }
+
+        .dash-greeting-title {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(120deg, var(--accent), var(--accent2, #ff6584));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .dash-date {
+            font-size: .78rem;
+            color: var(--text-muted);
+            text-align: right;
+            font-family: 'Syne', sans-serif;
+        }
+
+        /* ── KPI Cards ── */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .kpi-card {
+            background: var(--surface, #161620);
+            border: 1px solid var(--border, #252535);
+            border-radius: 16px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            transition: all .25s;
+            animation: fadeUp .5s ease both;
+            text-decoration: none;
+            display: block;
+            color: var(--text);
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: 0 12px 40px rgba(99,91,255,.15);
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            background: var(--kpi-color, rgba(99,91,255,.08));
+            transform: translate(30%, -30%);
+            transition: all .3s;
+        }
+
+        .kpi-card:hover::before {
+            width: 120px;
+            height: 120px;
+        }
+
+        .kpi-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--kpi-color, rgba(99,91,255,.12));
+            border: 1px solid var(--kpi-border, rgba(99,91,255,.2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            color: var(--kpi-accent, #635bff);
+        }
+
+        .kpi-label {
+            font-size: .7rem;
+            font-weight: 600;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: var(--text-muted, #666680);
+            margin-bottom: 6px;
+        }
+
+        .kpi-value {
+            font-family: 'Syne', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text);
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .kpi-sub {
+            font-size: .75rem;
+            color: var(--text-muted, #666680);
+        }
+
+        /* ── Budget Progress ── */
+        .budget-section {
+            background: var(--surface, #161620);
+            border: 1px solid var(--border, #252535);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 32px;
+            animation: fadeUp .5s .15s ease both;
+        }
+
+        .section-title {
+            font-family: 'Syne', sans-serif;
+            font-size: .72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted, #666680);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border, #252535);
+        }
+
+        .budget-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .budget-label {
+            font-size: .85rem;
+            color: var(--text-muted, #666680);
+        }
+
+        .budget-values {
+            display: flex;
+            gap: 24px;
+        }
+
+        .budget-val {
+            text-align: right;
+        }
+
+        .budget-val-num {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .budget-val-label {
+            font-size: .68rem;
+            color: var(--text-muted, #666680);
+            text-transform: uppercase;
+            letter-spacing: .8px;
+        }
+
+        .progress-wrap {
+            background: var(--bg, #0c0c14);
+            border-radius: 6px;
+            height: 8px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 6px;
+            background: linear-gradient(90deg, #635bff, #8b5cf6);
+            transition: width 1s ease;
+            position: relative;
+        }
+
+        .progress-bar.warning { background: linear-gradient(90deg, #f59e0b, #ef4444); }
+        .progress-bar.safe    { background: linear-gradient(90deg, #43e97b, #0ea5e9); }
+
+        .progress-pct {
+            font-size: .72rem;
+            color: var(--text-muted, #666680);
+            text-align: right;
+        }
+
+        /* ── Quick Access ── */
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-bottom: 32px;
+            animation: fadeUp .5s .2s ease both;
+        }
+
+        .quick-card {
+            background: var(--surface, #161620);
+            border: 1px solid var(--border, #252535);
+            border-radius: 14px;
+            padding: 20px;
+            text-decoration: none;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: all .2s;
+        }
+
+        .quick-card:hover {
+            border-color: var(--accent);
+            transform: translateX(4px);
+            background: color-mix(in srgb, var(--accent) 5%, var(--surface, #161620));
+        }
+
+        .quick-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .quick-info { flex: 1; }
+
+        .quick-name {
+            font-family: 'Syne', sans-serif;
+            font-size: .88rem;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .quick-desc {
+            font-size: .72rem;
+            color: var(--text-muted, #666680);
+        }
+
+        .quick-arrow {
+            color: var(--text-muted, #666680);
+            transition: transform .2s;
+        }
+
+        .quick-card:hover .quick-arrow { transform: translateX(4px); color: var(--accent); }
+
+        /* ── Recent Projects ── */
+        .recent-section {
+            animation: fadeUp .5s .25s ease both;
+        }
+
+        .recent-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .recent-item {
+            background: var(--surface, #161620);
+            border: 1px solid var(--border, #252535);
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            color: var(--text);
+            transition: all .2s;
+        }
+
+        .recent-item:hover {
+            border-color: rgba(99,91,255,.3);
+            transform: translateX(4px);
+        }
+
+        .recent-left { display: flex; align-items: center; gap: 12px; }
+
+        .recent-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #635bff;
+            flex-shrink: 0;
+        }
+
+        .recent-name {
+            font-family: 'Syne', sans-serif;
+            font-size: .9rem;
+            font-weight: 700;
+        }
+
+        .recent-meta {
+            font-size: .75rem;
+            color: var(--text-muted, #666680);
+            margin-top: 2px;
+        }
+
+        .recent-amount {
+            font-family: 'Syne', sans-serif;
+            font-size: .9rem;
+            font-weight: 700;
+            color: #43e97b;
+        }
+
+        /* ── Animations ── */
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-16px); }
+            to   { opacity: 1; transform: none; }
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: none; }
+        }
+
+        .kpi-card:nth-child(1) { animation-delay: .05s; }
+        .kpi-card:nth-child(2) { animation-delay: .1s; }
+        .kpi-card:nth-child(3) { animation-delay: .15s; }
+        .kpi-card:nth-child(4) { animation-delay: .2s; }
+        .kpi-card:nth-child(5) { animation-delay: .25s; }
+        .kpi-card:nth-child(6) { animation-delay: .3s; }
+
+        @media (max-width: 768px) {
+            .kpi-grid   { grid-template-columns: 1fr 1fr; }
+            .quick-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 480px) {
+            .kpi-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body class="mod-proyecto">
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div class="dash-wrap">
+
+    <!-- Header -->
+    <div class="dash-header">
+        <div class="dash-greeting">
+            <div class="dash-greeting-sub">Bienvenido de nuevo</div>
+            <div class="dash-greeting-title">GestorPro</div>
+        </div>
+        <div class="dash-date" id="dashDate"></div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+
+        <!-- Proyectos -->
+        <a class="kpi-card" href="/listar"
+           style="--kpi-color:rgba(99,91,255,.1);--kpi-border:rgba(99,91,255,.2);--kpi-accent:#635bff;">
+            <div class="kpi-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+                </svg>
+            </div>
+            <div class="kpi-label">Proyectos</div>
+            <div class="kpi-value" th:text="${totalProyectos}">0</div>
+            <div class="kpi-sub">Total registrados</div>
+        </a>
+
+        <!-- Materiales -->
+        <a class="kpi-card" href="/materiales/listar"
+           style="--kpi-color:rgba(29,200,150,.1);--kpi-border:rgba(29,200,150,.2);--kpi-accent:#1dc896;">
+            <div class="kpi-icon" style="background:rgba(29,200,150,.12);border-color:rgba(29,200,150,.2);color:#1dc896;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                </svg>
+            </div>
+            <div class="kpi-label">Materiales</div>
+            <div class="kpi-value" th:text="${totalMateriales}">0</div>
+            <div class="kpi-sub">En inventario</div>
+        </a>
+
+        <!-- Presupuestos -->
+        <a class="kpi-card" href="/presupuestos/listar"
+           style="--kpi-color:rgba(245,158,11,.1);--kpi-border:rgba(245,158,11,.2);--kpi-accent:#f59e0b;">
+            <div class="kpi-icon" style="background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.2);color:#f59e0b;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+            </div>
+            <div class="kpi-label">Presupuestado</div>
+            <div class="kpi-value" style="font-size:1.3rem;"
+                 th:text="'$ ' + ${#numbers.formatDecimal(totalPresupuestado, 1, 'COMMA', 0, 'POINT')}">$ 0</div>
+            <div class="kpi-sub" th:text="${totalPresupuestos} + ' presupuestos activos'">0 presupuestos</div>
+        </a>
+
+        <!-- Cortes -->
+        <a class="kpi-card" href="/cortes/listar"
+           style="--kpi-color:rgba(234,179,8,.1);--kpi-border:rgba(234,179,8,.2);--kpi-accent:#eab308;">
+            <div class="kpi-icon" style="background:rgba(234,179,8,.12);border-color:rgba(234,179,8,.2);color:#eab308;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                </svg>
+            </div>
+            <div class="kpi-label">Cortes</div>
+            <div class="kpi-value" th:text="${totalCortes}">0</div>
+            <div class="kpi-sub">Registrados</div>
+        </a>
+
+        <!-- Ejecutado -->
+        <a class="kpi-card" href="/detalleCorte/listar"
+           style="--kpi-color:rgba(14,165,233,.1);--kpi-border:rgba(14,165,233,.2);--kpi-accent:#0ea5e9;">
+            <div class="kpi-icon" style="background:rgba(14,165,233,.12);border-color:rgba(14,165,233,.2);color:#0ea5e9;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+            </div>
+            <div class="kpi-label">Ejecutado</div>
+            <div class="kpi-value" style="font-size:1.3rem;"
+                 th:text="'$ ' + ${#numbers.formatDecimal(totalEjecutado, 1, 'COMMA', 0, 'POINT')}">$ 0</div>
+            <div class="kpi-sub">En cortes de obra</div>
+        </a>
+
+        <!-- Disponible -->
+        <div class="kpi-card"
+             style="--kpi-color:rgba(67,233,123,.1);--kpi-border:rgba(67,233,123,.2);--kpi-accent:#43e97b;">
+            <div class="kpi-icon" style="background:rgba(67,233,123,.12);border-color:rgba(67,233,123,.2);color:#43e97b;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+            </div>
+            <div class="kpi-label">Disponible</div>
+            <div class="kpi-value" style="font-size:1.3rem;color:#43e97b;"
+                 th:text="'$ ' + ${#numbers.formatDecimal(totalPresupuestado - totalEjecutado, 1, 'COMMA', 0, 'POINT')}">$ 0</div>
+            <div class="kpi-sub">Sin ejecutar</div>
+        </div>
+
+    </div>
+
+    <!-- Budget Progress -->
+    <div class="budget-section" th:if="${totalPresupuestado > 0}">
+        <div class="section-title">Ejecución presupuestal global</div>
+        <div class="budget-row">
+            <div class="budget-label">Progreso de ejecución</div>
+            <div class="budget-values">
+                <div class="budget-val">
+                    <div class="budget-val-num" style="color:#635bff;"
+                         th:text="'$ ' + ${#numbers.formatDecimal(totalEjecutado, 1, 'COMMA', 0, 'POINT')}">$ 0</div>
+                    <div class="budget-val-label">Ejecutado</div>
+                </div>
+                <div class="budget-val">
+                    <div class="budget-val-num"
+                         th:text="'$ ' + ${#numbers.formatDecimal(totalPresupuestado, 1, 'COMMA', 0, 'POINT')}">$ 0</div>
+                    <div class="budget-val-label">Total</div>
+                </div>
+            </div>
+        </div>
+        <div class="progress-wrap">
+            <div class="progress-bar"
+                 th:classappend="${(totalEjecutado / totalPresupuestado * 100) > 80} ? 'warning' : 'safe'"
+                 th:style="'width:' + ${#numbers.formatDecimal(totalEjecutado / totalPresupuestado * 100, 1, 'POINT', 1, 'POINT')} + '%'">
+            </div>
+        </div>
+        <div class="progress-pct"
+             th:text="${#numbers.formatDecimal(totalEjecutado / totalPresupuestado * 100, 1, 'POINT', 1, 'POINT')} + '% ejecutado'">
+        </div>
+    </div>
+
+    <!-- Quick Access -->
+    <div class="section-title" style="margin-bottom:16px;animation: fadeUp .5s .18s ease both;">Acceso rápido</div>
+    <div class="quick-grid">
+
+        <a class="quick-card" href="/listar">
+            <div class="quick-icon" style="background:rgba(99,91,255,.12);color:#635bff;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+                </svg>
+            </div>
+            <div class="quick-info">
+                <div class="quick-name">Proyectos</div>
+                <div class="quick-desc">Ver y gestionar proyectos</div>
+            </div>
+            <svg class="quick-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+        </a>
+
+        <a class="quick-card" href="/materiales/listar">
+            <div class="quick-icon" style="background:rgba(29,200,150,.12);color:#1dc896;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                </svg>
+            </div>
+            <div class="quick-info">
+                <div class="quick-name">Materiales</div>
+                <div class="quick-desc">Inventario y stock</div>
+            </div>
+            <svg class="quick-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+        </a>
+
+        <a class="quick-card" href="/presupuestos/listar">
+            <div class="quick-icon" style="background:rgba(245,158,11,.12);color:#f59e0b;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+            </div>
+            <div class="quick-info">
+                <div class="quick-name">Presupuestos</div>
+                <div class="quick-desc">Control financiero</div>
+            </div>
+            <svg class="quick-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+        </a>
+
+        <a class="quick-card" href="/detalles/listar">
+            <div class="quick-icon" style="background:rgba(14,165,233,.12);color:#0ea5e9;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/>
+                    <line x1="8" y1="18" x2="21" y2="18"/>
+                </svg>
+            </div>
+            <div class="quick-info">
+                <div class="quick-name">Detalles</div>
+                <div class="quick-desc">Materiales por presupuesto</div>
+            </div>
+            <svg class="quick-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+        </a>
+
+        <a class="quick-card" href="/cortes/listar">
+            <div class="quick-icon" style="background:rgba(234,179,8,.12);color:#eab308;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                </svg>
+            </div>
+            <div class="quick-info">
+                <div class="quick-name">Cortes</div>
+                <div class="quick-desc">Control de avance</div>
+            </div>
+            <svg class="quick-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+        </a>
+
+        <a class="quick-card" href="/detalleCorte/listar">
+            <div class="quick-icon" style="background:rgba(255,101,132,.12);color:#ff6584;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                </svg>
+            </div>
+            <div class="quick-info">
+                <div class="quick-name">Det. Corte</div>
+                <div class="quick-desc">Desglose por corte</div>
+            </div>
+            <svg class="quick-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+        </a>
+
+    </div>
+
+    <!-- Proyectos recientes -->
+    <div class="recent-section" th:if="${not #lists.isEmpty(proyectos)}">
+        <div class="section-title" style="margin-bottom:16px;">Proyectos recientes</div>
+        <div class="recent-list">
+            <a class="recent-item" th:each="p : ${proyectos}"
+               th:href="@{/presupuestos/proyecto/{id}(id=${p.id})}">
+                <div class="recent-left">
+                    <div class="recent-dot"></div>
+                    <div>
+                        <div class="recent-name" th:text="${p.nombre}">Proyecto</div>
+                        <div class="recent-meta">
+                            Cliente #<span th:text="${p.idCliente}"></span>
+                            · <span th:text="${p.fecha}"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="recent-amount"
+                     th:if="${p.presupuesto != null}"
+                     th:text="'$ ' + ${#numbers.formatDecimal(p.presupuesto.total != null ? p.presupuesto.total : 0, 1, 'COMMA', 0, 'POINT')}">
+                </div>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666680" stroke-width="2" style="margin-left:8px;">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </div>
+    </div>
+
+</div>
+<script>
+    // Fecha actual
+    const now = new Date();
+    const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('dashDate').textContent = now.toLocaleDateString('es-CO', opts);
+</script>
+</body>
+</html>

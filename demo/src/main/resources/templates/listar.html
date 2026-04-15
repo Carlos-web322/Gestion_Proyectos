@@ -4,128 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Proyectos</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/CSS/styles.css}">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'DM Sans', sans-serif;
-            background: #0c0c14;
-            color: #e8e8f0;
-            min-height: 100vh;
-            padding: 36px 24px;
-            background-image:
-                radial-gradient(ellipse at 15% 15%, rgba(99,91,255,.1) 0, transparent 55%),
-                radial-gradient(ellipse at 85% 85%, rgba(255,90,120,.07) 0, transparent 55%);
-        }
-
-        .wrap { max-width: 900px; margin: 0 auto; }
-
-        /* ── Header ── */
-        header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 32px;
-            animation: fadeDown .5s ease both;
-        }
-
-        .logo {
-            font-family: 'Syne', sans-serif;
-            font-size: 1.6rem;
-            font-weight: 800;
-            background: linear-gradient(120deg, #7c74ff, #ff6584);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .btn-new {
-            background: linear-gradient(135deg, #635bff, #8b5cf6);
-            color: #fff;
-            text-decoration: none;
-            padding: 10px 22px;
-            border-radius: 10px;
-            font-family: 'Syne', sans-serif;
-            font-size: .82rem;
-            font-weight: 700;
-            letter-spacing: .6px;
-            transition: all .2s;
-            box-shadow: 0 4px 18px rgba(99,91,255,.35);
-            display: inline-block;
-        }
-
-        .btn-new:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 26px rgba(99,91,255,.5);
-        }
-
-        /* ── Stats ── */
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 14px;
-            margin-bottom: 32px;
-            animation: fadeUp .5s .1s ease both;
-        }
-
-        .stat {
-            background: #161620;
-            border: 1px solid #252535;
-            border-radius: 14px;
-            padding: 18px 22px;
-        }
-
-        .stat-label {
-            font-size: .72rem;
-            font-weight: 500;
-            letter-spacing: 1.2px;
-            text-transform: uppercase;
-            color: #666680;
-            margin-bottom: 6px;
-        }
-
-        .stat-val {
-            font-family: 'Syne', sans-serif;
-            font-size: 1.9rem;
-            font-weight: 800;
-            color: #e8e8f0;
-        }
-
-        .stat-val span {
-            font-size: .9rem;
-            color: #635bff;
-            font-weight: 500;
-            margin-left: 4px;
-        }
-
-        /* ── Search ── */
-        .search-bar {
-            background: #161620;
-            border: 1px solid #252535;
-            border-radius: 12px;
-            padding: 11px 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 28px;
-            animation: fadeUp .5s .15s ease both;
-        }
-
-        .search-bar input {
-            background: none;
-            border: none;
-            outline: none;
-            color: #e8e8f0;
-            font-family: 'DM Sans', sans-serif;
-            font-size: .9rem;
-            width: 100%;
-        }
-
-        .search-bar input::placeholder { color: #444460; }
-
-        /* ── Cards Grid ── */
+        /* ── Cards Grid específico de proyectos ── */
         .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -133,8 +14,8 @@
         }
 
         .card {
-            background: #161620;
-            border: 1px solid #252535;
+            background: var(--surface, #161620);
+            border: 1px solid var(--border, #252535);
             border-radius: 16px;
             padding: 22px;
             transition: all .25s;
@@ -179,7 +60,7 @@
             font-family: 'Syne', sans-serif;
             font-size: 1.05rem;
             font-weight: 700;
-            color: #e8e8f0;
+            color: var(--text, #e8e8f0);
             margin-bottom: 10px;
         }
 
@@ -208,12 +89,12 @@
 
         .meta-dot.pink { background: #ff6584; }
 
-        /* ── Card Actions ── */
         .card-actions {
             display: flex;
             gap: 8px;
             padding-top: 14px;
             border-top: 1px solid #1e1e2e;
+            flex-wrap: wrap;
         }
 
         .act {
@@ -229,6 +110,7 @@
             letter-spacing: .4px;
             text-decoration: none;
             display: inline-block;
+            white-space: nowrap;
         }
 
         .act-edit {
@@ -255,70 +137,47 @@
             box-shadow: 0 0 16px rgba(255,77,109,.4);
         }
 
-        /* ── Empty state ── */
-        .empty {
-            text-align: center;
-            padding: 60px 20px;
-            color: #444460;
-            grid-column: 1 / -1;
-        }
-
-        .empty p { font-size: 1rem; }
-
-        /* ── Animations ── */
-        @keyframes fadeDown {
-            from { opacity: 0; transform: translateY(-16px); }
-            to   { opacity: 1; transform: none; }
-        }
-
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(16px); }
-            to   { opacity: 1; transform: none; }
-        }
-
         .card:nth-child(1) { animation-delay: .1s; }
         .card:nth-child(2) { animation-delay: .18s; }
         .card:nth-child(3) { animation-delay: .26s; }
         .card:nth-child(4) { animation-delay: .34s; }
         .card:nth-child(5) { animation-delay: .42s; }
         .card:nth-child(6) { animation-delay: .5s; }
-        
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: none; }
+        }
 
         @media (max-width: 600px) {
             .grid { grid-template-columns: 1fr; }
-            .stats { grid-template-columns: 1fr; }
         }
     </style>
 </head>
-<body>
+<body class="mod-proyecto">
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 <div class="wrap">
 
-    <!-- Header -->
     <header>
         <div class="logo">Proyectos</div>
-        <a class="btn-new" href="/form">+ Nuevo Proyecto</a>
+        <a class="crear" href="/form">+ Nuevo Proyecto</a>
     </header>
 
-    <!-- Stats -->
     <div class="stats">
         <div class="stat">
             <div class="stat-label">Total</div>
-            <div class="stat-val" th:text="${#lists.size(proyecto)}">0<span>proyectos</span></div>
+            <div class="stat-val" th:text="${#lists.size(proyecto)}">0</div>
         </div>
         <div class="stat">
-            <div class="stat-label">Listado</div>
-            <div class="stat-val">
-                <span style="font-size:1rem;color:#43e97b;">Activo</span>
-            </div>
+            <div class="stat-label">Estado</div>
+            <div class="stat-val sm stat-accent">Activo</div>
         </div>
         <div class="stat">
             <div class="stat-label">Sistema</div>
-            <div class="stat-val" style="font-size:1rem;padding-top:4px">Spring Boot</div>
+            <div class="stat-val sm">Spring Boot</div>
         </div>
     </div>
 
-    <!-- Buscador -->
     <div class="search-bar">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7a7a9a" stroke-width="2">
             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
@@ -326,16 +185,14 @@
         <input type="text" id="searchInput" placeholder="Buscar proyecto por nombre..." oninput="filterCards()">
     </div>
 
-    <!-- Cards -->
     <div class="grid" id="grid">
 
-        <!-- Si no hay proyectos -->
         <div class="empty" th:if="${#lists.isEmpty(proyecto)}">
             <p>No hay proyectos registrados aún.</p>
         </div>
 
-        <!-- Loop de proyectos -->
-        <div class="card" th:each="p : ${proyecto}" th:attr="data-name=${#strings.toLowerCase(p.nombre)}">
+        <div class="card" th:each="p : ${proyecto}"
+             th:attr="data-name=${#strings.toLowerCase(p.nombre)}">
             <div class="card-top">
                 <div class="card-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#635bff" stroke-width="2">
@@ -356,21 +213,18 @@
                     <span class="meta-dot pink"></span>
                     Fecha: <span th:text="${p.fecha}">--</span>
                 </div>
-                 <!-- Total presupuesto -->
                 <div class="meta-row">
-                 <span class="meta-dot" style="background:#43e97b"></span>
-                 Total presupuesto: 
-                 <span 
-                 style="color:#43e97b;font-weight:700;" th:text="'$ ' 
-                 + ${#numbers.formatDecimal(totales[p.id], 1, 'COMMA', 0, 'POINT')}"
-                 >--</span>
-             </div>
+                    <span class="meta-dot" style="background:#43e97b"></span>
+                    Total presupuesto:
+                    <span style="color:#43e97b;font-weight:700;"
+                          th:text="'$ ' + ${#numbers.formatDecimal(totales[p.id], 1, 'COMMA', 0, 'POINT')}">--</span>
+                </div>
             </div>
 
             <div class="card-actions">
                 <a class="act act-edit" th:href="@{/form/{id}(id=${p.id})}">Editar</a>
                 <a class="act" style="color:#1dc896;border-color:rgba(29,200,150,.3);background:rgba(29,200,150,.07);"
-                    th:href="@{/presupuestos/proyecto/{id}(id=${p.id})}">Ver Presupuesto</a>
+                   th:href="@{/presupuestos/proyecto/{id}(id=${p.id})}">Ver Presupuesto</a>
                 <a class="act act-del"
                    th:href="@{/eliminar/{id}(id=${p.id})}"
                    onclick="return confirm('¿Seguro que deseas eliminar este proyecto?');">Eliminar</a>
