@@ -4,204 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${titulo}">Formulario</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'DM Sans', sans-serif;
-            background: #0c0c14;
-            color: #e8e8f0;
-            min-height: 100vh;
-            padding: 36px 24px;
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            background-image:
-                radial-gradient(ellipse at 20% 20%, rgba(99,91,255,.1) 0, transparent 55%),
-                radial-gradient(ellipse at 80% 80%, rgba(255,90,120,.07) 0, transparent 55%);
-        }
-
-        .wrap {
-            width: 100%;
-            max-width: 520px;
-            animation: fadeUp .5s ease both;
-        }
-
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            color: #666680;
-            text-decoration: none;
-            font-size: .82rem;
-            margin-bottom: 28px;
-            transition: color .2s;
-        }
-
-        .back-link:hover { color: #635bff; }
-
-        .page-title {
-            font-family: 'Syne', sans-serif;
-            font-size: 1.6rem;
-            font-weight: 800;
-            background: linear-gradient(120deg, #7c74ff, #ff6584);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 28px;
-        }
-
-        .card {
-            background: #161620;
-            border: 1px solid #252535;
-            border-radius: 18px;
-            padding: 32px;
-        }
-
-        .field {
-            margin-bottom: 22px;
-        }
-
-        label {
-            display: block;
-            font-size: .72rem;
-            font-weight: 500;
-            letter-spacing: 1.2px;
-            text-transform: uppercase;
-            color: #666680;
-            margin-bottom: 8px;
-        }
-
-        input[type="text"],
-        input[type="number"],
-        input[type="date"] {
-            width: 100%;
-            padding: 12px 16px;
-            background: #0c0c14;
-            border: 1px solid #252535;
-            border-radius: 10px;
-            color: #e8e8f0;
-            font-family: 'DM Sans', sans-serif;
-            font-size: .95rem;
-            outline: none;
-            transition: border-color .2s, box-shadow .2s;
-        }
-
-        input[type="text"]:focus,
-        input[type="number"]:focus,
-        input[type="date"]:focus {
-            border-color: #635bff;
-            box-shadow: 0 0 0 3px rgba(99,91,255,.2);
-        }
-
-        input[type="date"]::-webkit-calendar-picker-indicator {
-            filter: invert(0.5);
-            cursor: pointer;
-        }
-
-        .divider {
-            height: 1px;
-            background: #1e1e2e;
-            margin: 26px 0;
-        }
-
-        .actions {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .btn-save {
-            background: linear-gradient(135deg, #635bff, #8b5cf6);
-            color: #fff;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 10px;
-            font-family: 'Syne', sans-serif;
-            font-size: .85rem;
-            font-weight: 700;
-            letter-spacing: .6px;
-            cursor: pointer;
-            transition: all .2s;
-            box-shadow: 0 4px 18px rgba(99,91,255,.35);
-        }
-
-        .btn-save:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 26px rgba(99,91,255,.5);
-        }
-
-        .btn-save:active { transform: translateY(0); }
-
-        .btn-cancel {
-            color: #666680;
-            text-decoration: none;
-            font-size: .85rem;
-            font-family: 'Syne', sans-serif;
-            font-weight: 600;
-            padding: 12px 20px;
-            border-radius: 10px;
-            border: 1px solid #252535;
-            transition: all .2s;
-            display: inline-block;
-        }
-
-        .btn-cancel:hover {
-            border-color: #444460;
-            color: #e8e8f0;
-        }
-
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to   { opacity: 1; transform: none; }
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
-<body>
+<body class="mod-proyecto">
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 <div class="wrap">
 
-    <a class="back-link" href="/listar">
+    <a class="volver" href="/listar">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M19 12H5M12 5l-7 7 7 7"/>
         </svg>
         Volver al listado
     </a>
 
-    <div class="page-title" th:text="${titulo}">Formulario de Proyecto</div>
+    <h1 th:text="${titulo}">Formulario de Proyecto</h1>
 
-    <div class="card">
+    <div class="form-card">
         <form th:action="@{/form}" th:object="${proyecto}" method="post">
 
             <input type="hidden" th:field="*{id}">
 
             <div class="field">
                 <label for="nombre">Nombre del Proyecto</label>
-                <input type="text" id="nombre" th:field="*{nombre}" placeholder="Ej: Desarrollo de plataforma web" maxlength="50">
+                <input type="text" id="nombre" th:field="*{nombre}"
+                       placeholder="Ej: Desarrollo de plataforma web" maxlength="50">
                 <p style="color:#ff4d6d;font-size:.75rem;margin-top:5px;"
-                th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></p>
+                   th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></p>
             </div>
 
             <div class="field">
                 <label for="idCliente">ID del Cliente</label>
-                <input type="number" id="idCliente" th:field="*{idCliente}" placeholder="Ej: 1" min="1">
+                <input type="number" id="idCliente" th:field="*{idCliente}"
+                       placeholder="Ej: 1" min="1">
                 <p style="color:#ff4d6d;font-size:.75rem;margin-top:5px;"
-                th:if="${#fields.hasErrors('idCliente')}" th:errors="*{idCliente}"></p>
+                   th:if="${#fields.hasErrors('idCliente')}" th:errors="*{idCliente}"></p>
             </div>
 
             <div class="field">
                 <label for="fecha">Fecha</label>
-                <input type="date" id="fecha" th:field="*{fecha}" >
+                <input type="date" id="fecha" th:field="*{fecha}">
                 <p style="color:#ff4d6d;font-size:.75rem;margin-top:5px;"
-                th:if="${#fields.hasErrors('fecha')}" th:errors="*{fecha}"></p>
+                   th:if="${#fields.hasErrors('fecha')}" th:errors="*{fecha}"></p>
             </div>
 
             <div class="divider"></div>
 
             <div class="actions">
-                <button class="btn-save" type="submit">Guardar Proyecto</button>
+                <button type="submit">Guardar Proyecto</button>
                 <a class="btn-cancel" href="/listar">Cancelar</a>
             </div>
 
